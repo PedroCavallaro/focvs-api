@@ -1,14 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/db/prisma.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
+import { UpdateWorkouDto } from './dto/update-workout.dto';
 
 @Injectable()
 export class WorkoutRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  updateWorkout(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
+    try {
+      const update = await this.prisma.workout.update({
+        where: {
+          id: updateWorkoutDto.id,
+        },
+        data: {
+          day: updateWorkoutDto.day,
+          name: updateWorkoutDto.name,
+        },
+      });
+      return update;
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
   }
+  async updateWorkoutSets(updateWorkouDto: UpdateWorkouDto) {
+    try {
+      for (const set of updateWorkouDto.sets) {
+        await this.prisma.workoutItem.update({
+          where: {
+            id: set.id,
+          },
+          data: {
+            exerciseId: set.exerciseId,
+            reps: set.reps,
+            weight: set.weight,
+            workoutId: set.workoutId,
+          },
+        });
+      }
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
+  }
+
   deleteWorkout(): Promise<void> {
     throw new Error('Method not implemented.');
   }

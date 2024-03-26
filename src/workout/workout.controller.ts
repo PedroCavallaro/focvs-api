@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { Public } from 'src/auth/guards/decorators/public.decorator';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
+import { UpdateWorkouDto } from './dto/update-workout.dto';
 
 @Controller('workout')
 export class WorkoutController {
@@ -21,6 +22,13 @@ export class WorkoutController {
     const userWorkout = await this.service.getUserWorkouts(id);
 
     return userWorkout;
+  }
+
+  @Put()
+  async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
+    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto);
+
+    return updatedWorkout;
   }
 
   @Get()

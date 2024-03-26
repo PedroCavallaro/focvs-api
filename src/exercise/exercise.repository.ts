@@ -7,6 +7,18 @@ import { MuscleDto } from './dto/MuscleDto';
 export class ExerciseRepository {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
+  async getExercisesByMuscle(muscle: string) {
+    try {
+      return await this.prisma.exercise.findMany({
+        where: {
+          muscleId: muscle,
+        },
+      });
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
+  }
+
   async getExercises() {
     try {
       const exercises = await this.prisma.exercise.findMany({
@@ -28,7 +40,17 @@ export class ExerciseRepository {
       PrismaService.handleError(error);
     }
   }
-
+  async getMuscleByName(name: string) {
+    try {
+      return await this.prisma.muscle.findFirst({
+        where: {
+          name,
+        },
+      });
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
+  }
   async createExercise({
     description,
     gif_url,

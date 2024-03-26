@@ -13,6 +13,12 @@ export class WorkoutService {
     return workout;
   }
 
+  async updateWorkout(updateWorkoutDto) {
+    const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto);
+
+    return updatedWorkout;
+  }
+
   async getUserWorkouts(id: string) {
     const workouts = await this.repo.getUserWokouts(id);
 

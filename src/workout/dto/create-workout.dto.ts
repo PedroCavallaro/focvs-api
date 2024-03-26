@@ -1,12 +1,23 @@
+import { IsNotEmpty, IsOptional } from 'class-validator';
+
 export class CreateWorkoutDto {
+  @IsOptional()
   id?: string;
+
+  @IsNotEmpty()
   userId: string;
+
+  @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
   day: number;
+
+  @IsNotEmpty()
   exercises: Array<WorkOutItem>;
 }
 
-type WorkOutItem = {
+export type WorkOutItem = {
   exerciseId: string;
   sets: [
     {
@@ -16,11 +27,3 @@ type WorkOutItem = {
     },
   ];
 };
-
-// id         String   @id @default(uuid())
-//   reps       Int
-//   weight     Float
-//   Workout    Workout  @relation(fields: [workoutId], references: [id])
-//   workoutId  String
-//   Exercise   Exercise @relation(fields: [exerciseId], references: [id])
-//   exerciseId String
