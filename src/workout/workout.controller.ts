@@ -75,4 +75,9 @@ export class WorkoutController {
   ) {
     return await this.service.deleteWorkout(user.id, workoutId);
   }
+  @Delete('performed')
+  @Public()
+  delteWorkouts() {
+    return this.service.deltePermormed();
+  }
 }

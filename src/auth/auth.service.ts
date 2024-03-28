@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dtos/CreateAccountDto';
-import { PasswordService } from 'src/utils/password/password.service';
-import { JwtService } from 'src/utils/jwt/jwt.service';
+import { PasswordService } from 'src/shared/utils/password/password.service';
+import { JwtService } from 'src/shared/utils/jwt/jwt.service';
 import { AuthRepository } from './auth.repository';
 import { SiginDto } from './dtos/SiginDto';
 import { AppError } from 'src/shared/error/AppError';

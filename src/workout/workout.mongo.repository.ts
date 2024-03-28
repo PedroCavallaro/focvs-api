@@ -15,6 +15,7 @@ export class MongoWorkoutRepository {
     try {
       const performedWorkout = new this.model({
         userId: id,
+        date: new Date(performedWorkoutDto.date),
         ...performedWorkoutDto,
       });
 
@@ -27,7 +28,10 @@ export class MongoWorkoutRepository {
     }
   }
 
+  deleteWorkouts() {
+    return this.model.deleteMany();
+  }
   async listPerformedWorkouts(id: string) {
-    return await this.model.findOne({ userId: id });
+    return await this.model.find({ userId: id });
   }
 }

@@ -20,7 +20,9 @@ export class WorkoutService {
   async listPerformedWorkouts(id: string) {
     return await this.mongoRepo.listPerformedWorkouts(id);
   }
-
+  deltePermormed() {
+    return this.mongoRepo.deleteWorkouts();
+  }
   async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
     const performedWorkout = await this.mongoRepo.savePerformed(
       id,
