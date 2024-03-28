@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { Public } from 'src/auth/guards/decorators/public.decorator';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkouDto } from './dto/update-workout.dto';
 import { PerformedWorkoutDto } from './dto';
+import { AuthUser } from 'src/auth/guards/decorators';
+import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload';
+import { DeleteWorkoutDTO } from './dto/delete-workout.dto';
 
 @Controller('workout')
 export class WorkoutController {
@@ -18,10 +29,14 @@ export class WorkoutController {
   }
 
   @Post('new/performed')
-  @Public()
-  async savePerformedWorkout(@Body() performedWorkoutDto: PerformedWorkoutDto) {
-    const performedWorkout =
-      await this.service.savePerformed(performedWorkoutDto);
+  async savePerformedWorkout(
+    @Body() performedWorkoutDto: PerformedWorkoutDto,
+    @AuthUser() user: JwtPayloadDTO,
+  ) {
+    const performedWorkout = await this.service.savePerformed(
+      user.id,
+      performedWorkoutDto,
+    );
 
     return performedWorkout;
   }
@@ -33,6 +48,17 @@ export class WorkoutController {
 
     return userWorkout;
   }
+  @Get('performed/:id')
+  @Public()
+  async listPerformedWorkouts(@Param('id') id: string) {
+    return await this.service.listPerformedWorkouts(id);
+  }
+
+  @Get()
+  @Public()
+  async listAll() {
+    return await this.service.listAll();
+  }
 
   @Put()
   async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
@@ -41,9 +67,12 @@ export class WorkoutController {
     return updatedWorkout;
   }
 
-  @Get()
+  @Delete()
   @Public()
-  async listAll() {
-    return await this.service.listAll();
+  async deleteUserWorkouts(
+    @AuthUser() user: JwtPayloadDTO,
+    { workoutId }: DeleteWorkoutDTO,
+  ) {
+    return await this.service.deleteWorkout(user.id, workoutId);
   }
 }

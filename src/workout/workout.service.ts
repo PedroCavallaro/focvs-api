@@ -17,9 +17,15 @@ export class WorkoutService {
     return workout;
   }
 
-  async savePerformed(performedWorkoutDto: PerformedWorkoutDto) {
-    const performedWorkout =
-      await this.mongoRepo.savePerformed(performedWorkoutDto);
+  async listPerformedWorkouts(id: string) {
+    return await this.mongoRepo.listPerformedWorkouts(id);
+  }
+
+  async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
+    const performedWorkout = await this.mongoRepo.savePerformed(
+      id,
+      performedWorkoutDto,
+    );
 
     return performedWorkout;
   }
@@ -38,6 +44,10 @@ export class WorkoutService {
 
   async listAll() {
     return await this.repo.listAll();
+  }
+
+  async deleteWorkout(userId: string, workoutId: string) {
+    return await this.repo.deleteWorkout(userId, workoutId);
   }
 
   transformeArray(array: PrismaWorkoutDTO[]) {

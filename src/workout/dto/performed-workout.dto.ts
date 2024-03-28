@@ -6,9 +6,6 @@ export class PerformedWorkoutDto {
   id: string;
 
   @IsNotEmpty()
-  userId: string;
-
-  @IsNotEmpty()
   name: string;
 
   @IsNotEmpty()

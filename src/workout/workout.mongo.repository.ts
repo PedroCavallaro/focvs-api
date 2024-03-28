@@ -11,9 +11,12 @@ export class MongoWorkoutRepository {
     @InjectModel('Workout') private readonly model: Model<PerformedWorkout>,
   ) {}
 
-  async savePerformed(performedWorkoutDto: PerformedWorkoutDto) {
+  async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
     try {
-      const performedWorkout = new this.model(performedWorkoutDto);
+      const performedWorkout = new this.model({
+        userId: id,
+        ...performedWorkoutDto,
+      });
 
       await performedWorkout.save();
     } catch (error) {
@@ -22,5 +25,9 @@ export class MongoWorkoutRepository {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async listPerformedWorkouts(id: string) {
+    return await this.model.findOne({ userId: id });
   }
 }

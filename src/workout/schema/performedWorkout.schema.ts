@@ -1,6 +1,7 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { WorkOutItem } from '../dto';
 
+@Schema()
 export class PerformedWorkout {
   @Prop({
     type: String,

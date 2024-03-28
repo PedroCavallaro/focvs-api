@@ -1,8 +1,8 @@
 import { AppError } from 'src/shared/error/AppError';
-import { ExerciseDto } from './dto/ExerciseDto';
+import { ExerciseDto } from './dto/exercise.dto';
 import { ExerciseRepository } from './exercise.repository';
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { MuscleDto } from './dto/MuscleDto';
+import { MuscleDto } from './dto/muscle.dto';
 import { CacheService } from 'src/shared/cache/cache.service';
 
 @Injectable()

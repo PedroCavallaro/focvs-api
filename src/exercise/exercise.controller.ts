@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
-import { ExerciseDto } from './dto/ExerciseDto';
-import { MuscleDto } from './dto/MuscleDto';
+import { ExerciseDto } from './dto/exercise.dto';
+import { MuscleDto } from './dto/muscle.dto';
 import { Public } from 'src/auth/guards/decorators/public.decorator';
 
 @Controller('exercise')
@@ -9,7 +9,6 @@ export class ExerciseController {
   constructor(private readonly service: ExerciseService) {}
 
   @Get()
-  @Public()
   async getExercises() {
     const exercises = await this.service.getExercises();
 

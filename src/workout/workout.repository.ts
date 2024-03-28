@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/db/prisma.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkouDto } from './dto/update-workout.dto';
+import { Workout } from '@prisma/client';
 
 @Injectable()
 export class WorkoutRepository {
@@ -43,10 +44,21 @@ export class WorkoutRepository {
     }
   }
 
-  deleteWorkout(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async deleteWorkout(userId: string, workoutId: string) {
+    try {
+      return await this.prisma.workout.delete({
+        where: {
+          id: workoutId,
+          AND: {
+            userId,
+          },
+        },
+      });
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
   }
-  async saveWorkout(workoutDto: CreateWorkoutDto) {
+  async saveWorkout(workoutDto: CreateWorkoutDto): Promise<Workout> {
     try {
       const workout = await this.prisma.workout.create({
         data: {
