@@ -7,14 +7,15 @@ const getEnv = () => ({
     name: process.env.APP_NAME,
     description: process.env.APP_DESCRIPTION,
     version: process.env.APP_VERSION,
-    port: process.env.PORT,
+    port: process.env.PORT
   },
   jwt: {
     secret: process.env.JWT_SECRET,
-    expiresIn: parseInt(process.env.JWT_EXPIRES_IN ?? '1800'),
+    expiresIn: parseInt(process.env.JWT_EXPIRES_IN ?? '1800')
   },
   db: {
     mongo: process.env.MONGO_URL,
+    redis: process.env.REDIS_URL
   },
 
   isProduction(): boolean {
@@ -23,7 +24,7 @@ const getEnv = () => ({
       env.app.env !== 'development' &&
       env.app.env !== 'homolog'
     );
-  },
+  }
 });
 
 dotenv.config();

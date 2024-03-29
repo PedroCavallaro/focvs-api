@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    environment:
+      - JWT_SECRET=123
+      - MONGO_URL=mongodb://root:123@mongo:27017/
+      - DATABASE_URL=postgresql://admin:123@postgres:5432/focvs
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - 3001:3001
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    command: ['sh', '/app/start.sh']
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=focvs
+    ports:
+      - 5432:5432
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123
+    ports:
+      - 27017:27017
+  redis:
+    image: redis
+    command:
+      [
+        'redis-server',
+        '--bind',
+        'redis',
+        '--port',
+        '6379',
+        '--requirepass',
+        '123'
+      ]
+    ports:
+      - 6379:6379
+    volumes:
+      - cache:/cache
+volumes:
+  cache:
