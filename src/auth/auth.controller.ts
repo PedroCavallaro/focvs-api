@@ -22,7 +22,7 @@ export class AuthController {
   @Post('register')
   async createUser(
     @Body() createAccountDto: CreateAccountDto,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     const userToken = await this.authService.createUser(createAccountDto);
 

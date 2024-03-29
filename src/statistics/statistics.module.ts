@@ -11,11 +11,11 @@ import { MongoWorkoutRepository } from 'src/workout/workout.mongo.repository';
     MongooseModule.forFeature([
       {
         name: 'Workout',
-        schema: performedWorkoutSchema,
-      },
-    ]),
+        schema: performedWorkoutSchema
+      }
+    ])
   ],
   controllers: [StatisticsController],
-  providers: [StatisticsService, StatisticsRepository, MongoWorkoutRepository],
+  providers: [StatisticsService, StatisticsRepository, MongoWorkoutRepository]
 })
 export class StatisticsModule {}

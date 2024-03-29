@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  Put
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { Public } from 'src/auth/guards/decorators/public.decorator';
@@ -31,11 +31,11 @@ export class WorkoutController {
   @Post('new/performed')
   async savePerformedWorkout(
     @Body() performedWorkoutDto: PerformedWorkoutDto,
-    @AuthUser() user: JwtPayloadDTO,
+    @AuthUser() user: JwtPayloadDTO
   ) {
     const performedWorkout = await this.service.savePerformed(
       user.id,
-      performedWorkoutDto,
+      performedWorkoutDto
     );
 
     return performedWorkout;
@@ -71,7 +71,7 @@ export class WorkoutController {
   @Public()
   async deleteUserWorkouts(
     @AuthUser() user: JwtPayloadDTO,
-    { workoutId }: DeleteWorkoutDTO,
+    { workoutId }: DeleteWorkoutDTO
   ) {
     return await this.service.deleteWorkout(user.id, workoutId);
   }

@@ -4,27 +4,32 @@ import { WorkOutItem } from '../dto';
 @Schema()
 export class PerformedWorkout {
   @Prop({
-    type: String,
+    type: String
   })
   id: string;
 
   @Prop({
-    type: String,
+    type: String
   })
   userId: string;
 
   @Prop({
-    type: String,
+    type: String
   })
   name: string;
 
   @Prop({
-    type: Date,
+    type: Number
+  })
+  hours: number;
+
+  @Prop({
+    type: Date
   })
   date: Date;
 
   @Prop({
-    type: Array<WorkOutItem>,
+    type: Array<WorkOutItem>
   })
   exercises: Array<WorkOutItem>;
 }

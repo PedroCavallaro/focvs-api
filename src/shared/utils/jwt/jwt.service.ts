@@ -10,12 +10,12 @@ export class JwtService {
         id,
         email,
         name,
-        imageUrl,
+        imageUrl
       },
       env.jwt.secret,
       {
-        expiresIn: 30 * 60,
-      },
+        expiresIn: 30 * 60 * 60 * 60
+      }
     );
   }
 

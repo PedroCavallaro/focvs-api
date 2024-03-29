@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber } from 'class-validator';
 import { WorkOutItem } from './create-workout.dto';
 
 export class PerformedWorkoutDto {
@@ -9,7 +9,12 @@ export class PerformedWorkoutDto {
   name: string;
 
   @IsNotEmpty()
+  @IsDateString()
   date: Date;
+
+  @IsNotEmpty()
+  @IsNumber()
+  hours: number;
 
   @IsNotEmpty()
   exercises: Array<WorkOutItem>;

@@ -12,12 +12,12 @@ export class WorkoutRepository {
     try {
       const update = await this.prisma.workout.update({
         where: {
-          id: updateWorkoutDto.id,
+          id: updateWorkoutDto.id
         },
         data: {
           day: updateWorkoutDto.day,
-          name: updateWorkoutDto.name,
-        },
+          name: updateWorkoutDto.name
+        }
       });
       return update;
     } catch (error) {
@@ -29,14 +29,14 @@ export class WorkoutRepository {
       for (const set of updateWorkouDto.sets) {
         await this.prisma.workoutItem.update({
           where: {
-            id: set.id,
+            id: set.id
           },
           data: {
             exerciseId: set.exerciseId,
             reps: set.reps,
             weight: set.weight,
-            workoutId: set.workoutId,
-          },
+            workoutId: set.workoutId
+          }
         });
       }
     } catch (error) {
@@ -50,9 +50,9 @@ export class WorkoutRepository {
         where: {
           id: workoutId,
           AND: {
-            userId,
-          },
-        },
+            userId
+          }
+        }
       });
     } catch (error) {
       PrismaService.handleError(error);
@@ -64,8 +64,8 @@ export class WorkoutRepository {
         data: {
           name: workoutDto.name,
           day: workoutDto.day,
-          userId: workoutDto.userId,
-        },
+          userId: workoutDto.userId
+        }
       });
 
       workoutDto.exercises.map((e) => {
@@ -76,8 +76,8 @@ export class WorkoutRepository {
               weight: s.weight,
               set_number: s.set_number,
               exerciseId: e.exerciseId,
-              workoutId: workout.id,
-            },
+              workoutId: workout.id
+            }
           });
         });
       });
@@ -90,25 +90,25 @@ export class WorkoutRepository {
   async getUserWokouts(userId: string) {
     const workout = await this.prisma.workout.findMany({
       where: {
-        userId,
+        userId
       },
       include: {
         workoutItem: {
           select: {
             exercise: {
               select: {
-                name: true,
-              },
+                name: true
+              }
             },
             set_number: true,
             reps: true,
-            weight: true,
+            weight: true
           },
           orderBy: {
-            set_number: 'asc',
-          },
-        },
-      },
+            set_number: 'asc'
+          }
+        }
+      }
     });
 
     return workout;
@@ -121,7 +121,7 @@ export class WorkoutRepository {
 
       return {
         workout,
-        sets,
+        sets
       };
     } catch (error) {
       PrismaService.handleError(error);
