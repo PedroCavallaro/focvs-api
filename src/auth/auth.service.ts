@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dtos/CreateAccountDto';
-import { PasswordService } from 'src/shared/utils/password/password.service';
-import { JwtService } from 'src/shared/utils/jwt/jwt.service';
+import { PasswordService } from 'src/auth/password/password.service';
+import { JwtService } from 'src/auth/jwt/jwt.service';
 import { AuthRepository } from './auth.repository';
 import { SiginDto } from './dtos/SiginDto';
 import { AppError } from 'src/shared/error/AppError';
@@ -11,18 +11,18 @@ export class AuthService {
   constructor(
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
-    private readonly repo: AuthRepository,
+    private readonly repo: AuthRepository
   ) {}
 
   async createUser(createAccountDTO: CreateAccountDto) {
     const isAlreadyRegistered = await this.repo.searchAccount(
-      createAccountDTO.email,
+      createAccountDTO.email
     );
     if (isAlreadyRegistered)
       throw new AppError('Email já ccadastrado', HttpStatus.CONFLICT);
 
     const hashedPass = await this.passwordService.generateHash(
-      createAccountDTO.password,
+      createAccountDTO.password
     );
 
     createAccountDTO.password = hashedPass;
@@ -33,7 +33,7 @@ export class AuthService {
       account.id,
       account.email,
       account.name,
-      account.imageUrl,
+      account.imageUrl
     );
 
     return token;
@@ -47,7 +47,7 @@ export class AuthService {
 
     const isPasswordMatch = await this.passwordService.comparePassword(
       signInDTO.password,
-      account.password,
+      account.password
     );
 
     if (!isPasswordMatch)
@@ -57,7 +57,7 @@ export class AuthService {
       account.id,
       account.email,
       account.name,
-      account.imageUrl,
+      account.imageUrl
     );
     return token;
   }

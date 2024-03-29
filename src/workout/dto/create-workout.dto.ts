@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreateWorkoutDto {
   @IsNotEmpty()
@@ -6,6 +6,10 @@ export class CreateWorkoutDto {
 
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  public: boolean;
 
   @IsNotEmpty()
   day: number;
@@ -21,6 +25,6 @@ export type WorkOutItem = {
       set_number: number;
       reps: number;
       weight: number;
-    },
+    }
   ];
 };

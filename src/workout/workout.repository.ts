@@ -2,11 +2,57 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/db/prisma.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkouDto } from './dto/update-workout.dto';
-import { Workout } from '@prisma/client';
+import { Prisma, Workout } from '@prisma/client';
+import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto';
 
 @Injectable()
 export class WorkoutRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async searchPaginated(q: PaginatedWorkoutDTO) {
+    try {
+      const params = {
+        skip: (Number(q.page) - 1) * Number(q.limit),
+        take: Number(q.limit)
+      };
+
+      const cond = {
+        NOT: {
+          public: false
+        },
+        OR: [
+          {
+            name: {
+              contains: q.workoutName
+            }
+          },
+          {
+            user: {
+              name: {
+                contains: q.username
+              }
+            }
+          }
+        ]
+      } satisfies Prisma.WorkoutWhereInput;
+
+      return await this.prisma.$transaction([
+        this.prisma.workout.findMany({
+          where: {
+            ...cond
+          },
+          ...params
+        }),
+        this.prisma.workout.count({
+          where: {
+            ...cond
+          }
+        })
+      ]);
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
+  }
 
   async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
     try {
@@ -46,7 +92,7 @@ export class WorkoutRepository {
 
   async deleteWorkout(userId: string, workoutId: string) {
     try {
-      return await this.prisma.workout.delete({
+      return await this.prisma.workout.deleteMany({
         where: {
           id: workoutId,
           AND: {
@@ -64,6 +110,7 @@ export class WorkoutRepository {
         data: {
           name: workoutDto.name,
           day: workoutDto.day,
+          public: workoutDto.public,
           userId: workoutDto.userId
         }
       });

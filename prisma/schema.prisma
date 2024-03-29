@@ -15,16 +15,18 @@ datasource db {
 
 model Account {
   id         String   @id @default(uuid())
-  email      String   @unique
-  password   String
+  email      String   @unique @db.VarChar(255)
+  password   String   @db.VarChar(64)
   created_at DateTime @default(now())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
+
+  @@index([email], type: Hash)
 }
 
 model User {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @db.VarChar(255)
   image_url String?
   account   Account[]
   workout   Workout[]
@@ -32,11 +34,14 @@ model User {
 
 model Workout {
   id          String        @id @default(uuid())
-  name        String
+  name        String        @db.VarChar(255)
   day         Int
+  public      Boolean
   user        User          @relation(fields: [userId], references: [id])
   userId      String
   workoutItem WorkoutItem[]
+
+  @@index([name], type: BTree)
 }
 
 model WorkoutItem {
@@ -48,21 +53,25 @@ model WorkoutItem {
   workoutId  String
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
   exerciseId String
+
+  @@map("Workout_item")
 }
 
 model Exercise {
   id          String        @id @default(uuid())
-  name        String
-  description String
+  name        String        @db.VarChar(100)
+  description String        @db.VarChar(255)
   gif_url     String
   workoutItem WorkoutItem[]
   muscle      Muscle        @relation(fields: [muscleId], references: [id])
   muscleId    String
+
+  @@index([name], type: BTree)
 }
 
 model Muscle {
   id          String     @id @default(uuid())
-  name        String
+  name        String     @db.VarChar(20)
   picture_url String
   exercise    Exercise[]
 }

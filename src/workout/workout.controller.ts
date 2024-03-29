@@ -5,13 +5,14 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put,
+  Query
 } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { Public } from 'src/auth/guards/decorators/public.decorator';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkouDto } from './dto/update-workout.dto';
-import { PerformedWorkoutDto } from './dto';
+import { PaginatedWorkoutDTO, PerformedWorkoutDto } from './dto';
 import { AuthUser } from 'src/auth/guards/decorators';
 import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload';
 import { DeleteWorkoutDTO } from './dto/delete-workout.dto';
@@ -58,6 +59,12 @@ export class WorkoutController {
   @Public()
   async listAll() {
     return await this.service.listAll();
+  }
+
+  @Get('search/paginate')
+  @Public()
+  async searchPaginated(@Query() q: PaginatedWorkoutDTO) {
+    return await this.service.searchPaginated(q);
   }
 
   @Put()

@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { WorkoutRepository } from './workout.repository';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
-import { PerformedWorkoutDto, PrismaWorkoutDTO } from './dto';
+import {
+  PaginatedWorkoutDTO,
+  PerformedWorkoutDto,
+  PrismaWorkoutDTO
+} from './dto';
 import { MongoWorkoutRepository } from './workout.mongo.repository';
+import { parsePagination } from 'src/shared/utils/pagination';
 
 @Injectable()
 export class WorkoutService {
   constructor(
     private readonly repo: WorkoutRepository,
-    private readonly mongoRepo: MongoWorkoutRepository,
+    private readonly mongoRepo: MongoWorkoutRepository
   ) {}
 
   async createWorkout(workoutDto: CreateWorkoutDto) {
@@ -16,7 +21,11 @@ export class WorkoutService {
 
     return workout;
   }
+  async searchPaginated(q: PaginatedWorkoutDTO) {
+    const [workouts, count] = await this.repo.searchPaginated(q);
 
+    return parsePagination(workouts, q, count);
+  }
   async listPerformedWorkouts(id: string) {
     return await this.mongoRepo.listPerformedWorkouts(id);
   }
@@ -26,7 +35,7 @@ export class WorkoutService {
   async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
     const performedWorkout = await this.mongoRepo.savePerformed(
       id,
-      performedWorkoutDto,
+      performedWorkoutDto
     );
 
     return performedWorkout;
@@ -52,7 +61,7 @@ export class WorkoutService {
     return await this.repo.deleteWorkout(userId, workoutId);
   }
 
-  transformeArray(array: PrismaWorkoutDTO[]) {
+  private transformeArray(array: PrismaWorkoutDTO[]) {
     return array.map((item) => ({
       id: item.id,
       name: item.name,
@@ -64,16 +73,16 @@ export class WorkoutService {
             name: string;
             sets: { reps: number; weight: number; set_number: number }[];
           }[],
-          currentItem,
+          currentItem
         ) => {
           const existingExerciseIndex = acc.findIndex(
-            (exercise) => exercise.name === currentItem.exercise.name,
+            (exercise) => exercise.name === currentItem.exercise.name
           );
           if (existingExerciseIndex !== -1) {
             acc[existingExerciseIndex].sets.push({
               set_number: currentItem.set_number,
               reps: currentItem.reps,
-              weight: currentItem.weight,
+              weight: currentItem.weight
             });
           } else {
             acc.push({
@@ -82,15 +91,15 @@ export class WorkoutService {
                 {
                   set_number: currentItem.set_number,
                   reps: currentItem.reps,
-                  weight: currentItem.weight,
-                },
-              ],
+                  weight: currentItem.weight
+                }
+              ]
             });
           }
           return acc;
         },
-        [],
-      ),
+        []
+      )
     }));
   }
 }

@@ -8,7 +8,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 @Injectable()
 export class MongoWorkoutRepository {
   constructor(
-    @InjectModel('Workout') private readonly model: Model<PerformedWorkout>,
+    @InjectModel('Workout') private readonly model: Model<PerformedWorkout>
   ) {}
 
   async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
@@ -16,14 +16,14 @@ export class MongoWorkoutRepository {
       const performedWorkout = new this.model({
         userId: id,
         date: new Date(performedWorkoutDto.date),
-        ...performedWorkoutDto,
+        ...performedWorkoutDto
       });
 
       await performedWorkout.save();
     } catch (error) {
       throw new AppError(
         'Error on saving performed workout',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }

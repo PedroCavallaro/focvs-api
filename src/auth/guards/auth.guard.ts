@@ -3,10 +3,10 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtService } from 'src/shared/utils/jwt/jwt.service';
+import { JwtService } from 'src/auth/jwt/jwt.service';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 import { Reflector } from '@nestjs/core';
 
@@ -14,13 +14,13 @@ import { Reflector } from '@nestjs/core';
 export class AuthGuard implements CanActivate {
   constructor(
     @Inject(JwtService) private jwtService: JwtService,
-    private reflector: Reflector,
+    private reflector: Reflector
   ) {}
 
   private checkContext(context: ExecutionContext) {
     const hasPublicDecorator = this.reflector.getAllAndOverride<boolean>(
       IS_PUBLIC_KEY,
-      [context.getHandler(), context.getClass()],
+      [context.getHandler(), context.getClass()]
     );
 
     const isPublicContext = hasPublicDecorator;
@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
 
     return {
       isPublicContext,
-      doSetUser,
+      doSetUser
     };
   }
 
