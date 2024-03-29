@@ -42,13 +42,23 @@ export class WorkoutController {
     return performedWorkout;
   }
 
-  @Get(':id')
+  @Get('user/:id')
   @Public()
   async getUserWorkouts(@Param('id') id: string) {
     const userWorkout = await this.service.getUserWorkouts(id);
 
     return userWorkout;
   }
+
+  @Get(':workoutId')
+  async getWorkout(@Param('workoutId') workoutId: string) {
+    const workout = await this.service.getWorkout(workoutId);
+
+    return workout;
+  }
+
+  // @Get(':workoutId/shared')
+
   @Get('performed/:id')
   @Public()
   async listPerformedWorkouts(@Param('id') id: string) {

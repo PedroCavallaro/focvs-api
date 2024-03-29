@@ -53,6 +53,12 @@ export class WorkoutService {
     return this.transformeArray(workouts);
   }
 
+  async getWorkout(workoutId: string) {
+    const workout = await this.repo.getWorkout(workoutId);
+
+    return this.transformeArray([workout]);
+  }
+
   async listAll() {
     return await this.repo.listAll();
   }

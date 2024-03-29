@@ -7,6 +7,24 @@ import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto';
 
 @Injectable()
 export class WorkoutRepository {
+  private readonly workoutInclude = {
+    workoutItem: {
+      select: {
+        exercise: {
+          select: {
+            name: true
+          }
+        },
+        set_number: true,
+        reps: true,
+        weight: true
+      },
+      orderBy: {
+        set_number: 'asc'
+      }
+    }
+  } satisfies Prisma.WorkoutInclude;
+
   constructor(private readonly prisma: PrismaService) {}
 
   async searchPaginated(q: PaginatedWorkoutDTO) {
@@ -139,26 +157,25 @@ export class WorkoutRepository {
       where: {
         userId
       },
-      include: {
-        workoutItem: {
-          select: {
-            exercise: {
-              select: {
-                name: true
-              }
-            },
-            set_number: true,
-            reps: true,
-            weight: true
-          },
-          orderBy: {
-            set_number: 'asc'
-          }
-        }
-      }
+      include: this.workoutInclude
     });
 
     return workout;
+  }
+
+  async getWorkout(workoutId: string) {
+    try {
+      const workout = await this.prisma.workout.findFirstOrThrow({
+        where: {
+          AND: [{ id: workoutId }, { public: true }]
+        },
+        include: this.workoutInclude
+      });
+
+      return workout;
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
   }
 
   async listAll() {
