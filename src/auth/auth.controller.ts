@@ -1,10 +1,10 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-
 import { Response } from 'express';
 import { CreateAccountDto } from './dtos/CreateAccountDto';
 import { SiginDto } from './dtos/SiginDto';
 import { Public } from './guards/decorators/public.decorator';
+import { LoggerService } from 'src/shared/log/Logger.service';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +14,13 @@ export class AuthController {
   @Post('login')
   async signIn(@Body() signInDto: SiginDto, @Res() res: Response) {
     const userToken = await this.authService.signIn(signInDto);
+
+    await LoggerService.sendToQueue({
+      message: 'teste',
+      requestorId: '123',
+      timestamp: new Date(),
+      operation: 'create'
+    });
 
     return res.status(200).send({ token: userToken });
   }

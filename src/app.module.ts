@@ -9,23 +9,25 @@ import { AuthGuard } from './auth/guards/auth.guard';
 import { StatisticsModule } from './statistics/statistics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { env } from './shared/env';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     PrismaModule,
     AuthModule,
     ExerciseModule,
     WorkoutModule,
     StatisticsModule,
-    MongooseModule.forRoot(env.db.mongo, { dbName: 'focvs' }),
+    MongooseModule.forRoot(env.db.mongo, { dbName: 'focvs' })
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+      useClass: AuthGuard
+    }
+  ]
 })
 export class AppModule {}

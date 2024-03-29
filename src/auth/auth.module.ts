@@ -15,8 +15,8 @@ import { PrismaModule } from 'src/shared/db/prisma.module';
     AuthService,
     AuthGuard,
     JwtService,
-    PasswordService,
+    PasswordService
   ],
-  exports: [AuthService, AuthGuard, JwtService],
+  exports: [AuthService, AuthGuard, JwtService]
 })
 export class AuthModule {}

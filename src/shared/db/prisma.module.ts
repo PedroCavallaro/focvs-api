@@ -5,9 +5,9 @@ import { PrismaService } from './prisma.service';
   providers: [
     {
       provide: PrismaService,
-      useValue: PrismaService.instance,
-    },
+      useValue: PrismaService.instance
+    }
   ],
-  exports: [PrismaService],
+  exports: [PrismaService]
 })
 export class PrismaModule {}

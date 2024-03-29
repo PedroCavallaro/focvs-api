@@ -2,10 +2,11 @@ import { Global, HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import {
   DefaultArgs,
-  DynamicQueryExtensionArgs,
+  DynamicQueryExtensionArgs
 } from '@prisma/client/runtime/library';
 import { PrismaError } from 'prisma-error-enum';
 import { AppError } from '../error/AppError';
+import { LoggerService } from '../log/Logger.service';
 
 @Global()
 @Injectable()
@@ -18,7 +19,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     this.subscribe({
       async $allOperations({ args, query }) {
         return query(args);
-      },
+      }
     });
   }
 
@@ -32,19 +33,19 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           | '$allOperations']?: unknown;
       },
       Prisma.TypeMap<DefaultArgs>
-    >,
+    >
   ) {
     Object.assign(this, this.$extends({ query: model }));
   }
 
   public static isKnownError(
-    exception: unknown,
+    exception: unknown
   ): exception is Prisma.PrismaClientKnownRequestError {
     return exception instanceof Prisma.PrismaClientKnownRequestError;
   }
 
   public static isPrismaError(
-    exception: unknown,
+    exception: unknown
   ): exception is
     | Prisma.PrismaClientKnownRequestError
     | Prisma.PrismaClientRustPanicError
@@ -66,21 +67,27 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         case PrismaError.UniqueConstraintViolation:
           throw new AppError(
             `Duplicated ${err.meta.target}.`,
-            HttpStatus.CONFLICT,
+            HttpStatus.CONFLICT
           );
 
         case PrismaError.RecordsNotFound:
           throw new AppError(
             `${err.meta?.modelName ?? 'Record'} not found`,
-            HttpStatus.NOT_FOUND,
+            HttpStatus.NOT_FOUND
           );
 
         case PrismaError.ForeignConstraintViolation:
           throw new AppError(
             `Constraint violation on ${err.meta?.field_name}`,
-            HttpStatus.PRECONDITION_FAILED,
+            HttpStatus.PRECONDITION_FAILED
           );
       }
+      LoggerService.sendToQueue({
+        message: `Error on prisma, ${err.message}`,
+        requestorId: '1',
+        timestamp: new Date(),
+        operation: 'A'
+      });
     }
 
     throw err;

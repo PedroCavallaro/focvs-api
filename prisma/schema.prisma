@@ -66,3 +66,11 @@ model Muscle {
   picture_url String
   exercise    Exercise[]
 }
+
+model Logs {
+  id          String   @id @default(uuid())
+  message     String
+  requestorId String
+  timestamp   DateTime
+  operation   String?
+}

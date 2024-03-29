@@ -7,7 +7,7 @@ export class AppError extends HttpException {
   constructor(
     message: string | string[],
     statusCode = 400,
-    public readonly details: Record<string, any> | undefined = undefined,
+    public readonly details: Record<string, any> | undefined = undefined
   ) {
     super(isArray(message) ? message[0] : message, statusCode);
 
@@ -17,7 +17,7 @@ export class AppError extends HttpException {
 
 export class ForbiddenError extends AppError {
   constructor(
-    message = 'User does not have permission to access this resource',
+    message = 'User does not have permission to access this resource'
   ) {
     super(message, HttpStatus.FORBIDDEN);
   }
