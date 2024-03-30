@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CacheService } from '../cache/cache.service';
 import { LogDto } from './dto/log.dto';
 import { PrismaService } from '../db/prisma.service';
 import { Cron } from '@nestjs/schedule';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class LoggerService {
-  static readonly cache = new CacheService();
+  static readonly cache: CacheService = new CacheService();
 
   constructor(private readonly prisma: PrismaService) {}
 

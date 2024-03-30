@@ -9,12 +9,12 @@ import { CacheService } from 'src/shared/cache/cache.service';
 export class ExerciseService {
   constructor(
     private readonly repo: ExerciseRepository,
-    private readonly cache: CacheService,
+    private readonly cache: CacheService
   ) {}
 
   async createExercise(exerciseDto: ExerciseDto) {
     const exerciseAlreadyCreated = await this.repo.searchExercise(
-      exerciseDto.name,
+      exerciseDto.name
     );
 
     if (exerciseAlreadyCreated)
@@ -24,7 +24,7 @@ export class ExerciseService {
       description: exerciseDto.description,
       gif_url: exerciseDto.gif_url,
       muscleId: exerciseDto.muscleId,
-      name: exerciseDto.name,
+      name: exerciseDto.name
     });
 
     return exercise;
@@ -38,14 +38,14 @@ export class ExerciseService {
 
     const exercise = await this.repo.createMuscle(
       muscleDto.name,
-      muscleDto.picture_url,
+      muscleDto.picture_url
     );
 
     return exercise;
   }
 
   async getExercises() {
-    const cachedExercises = await this.cache.get('exercises');
+    const cachedExercises = await this.cache.get('exercise');
 
     if (cachedExercises) return JSON.parse(cachedExercises);
 
@@ -55,6 +55,7 @@ export class ExerciseService {
 
     return exercises;
   }
+
   async getExerciseByMuscle(muscle: string) {
     const cachedExercises = await this.cache.get(muscle);
 
@@ -71,6 +72,7 @@ export class ExerciseService {
 
     return exercises;
   }
+
   async getMuscles() {
     return await this.repo.getMuscles();
   }

@@ -5,9 +5,9 @@ import { CacheService } from './cache.service';
   providers: [
     {
       provide: CacheService,
-      useValue: CacheService.instace,
-    },
+      useFactory: () => new CacheService()
+    }
   ],
-  exports: [CacheService],
+  exports: [CacheService]
 })
 export class CacheModule {}
