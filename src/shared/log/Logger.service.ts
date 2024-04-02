@@ -11,7 +11,7 @@ export class LoggerService {
   constructor(private readonly prisma: PrismaService) {}
 
   @Cron('0 5 * * * *')
-  async syncRedisToDatabase() {
+  private async syncRedisToDatabase() {
     const logs = await this.getLogsOnRedisQueue();
 
     console.log('Saving logs on Database');

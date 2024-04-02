@@ -7,7 +7,7 @@ export class SiginDto {
 
   @IsNotEmpty()
   @MinLength(8, {
-    message: 'password must be at least 8 caracters',
+    message: 'password must be at least 8 caracters'
   })
   password: string;
 }

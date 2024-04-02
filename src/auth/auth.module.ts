@@ -6,9 +6,10 @@ import { PasswordService } from 'src/auth/password/password.service';
 import { AuthRepository } from './auth.repository';
 import { AuthGuard } from './guards/auth.guard';
 import { PrismaModule } from 'src/shared/db/prisma.module';
+import { CacheModule } from 'src/shared/cache/cache.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, CacheModule],
   controllers: [AuthController],
   providers: [
     AuthRepository,

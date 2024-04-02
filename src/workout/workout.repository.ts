@@ -59,6 +59,14 @@ export class WorkoutRepository {
           where: {
             ...cond
           },
+          include: {
+            user: {
+              select: {
+                name: true,
+                image_url: true
+              }
+            }
+          },
           ...params
         }),
         this.prisma.workout.count({
