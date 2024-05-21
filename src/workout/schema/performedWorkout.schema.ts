@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { WorkOutItem } from '../dto';
+import { PerformedWorkoutItem } from '../dto';
 
 @Schema()
 export class PerformedWorkout {
@@ -29,9 +29,9 @@ export class PerformedWorkout {
   date: Date;
 
   @Prop({
-    type: Array<WorkOutItem>
+    type: Array<PerformedWorkoutItem>
   })
-  exercises: Array<WorkOutItem>;
+  exercises: Array<PerformedWorkoutItem>;
 }
 
 export const performedWorkoutSchema =

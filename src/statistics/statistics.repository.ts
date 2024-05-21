@@ -124,4 +124,17 @@ export class StatisticsRepository {
       console.log(error);
     }
   }
+
+  async exercisesWithImprovements(userId: string) {
+    try {
+      const exercises = await this.model
+        .find({ userId, 'exercises.sets.hasImprovements': true })
+        .select('exercises.sets.newWeight')
+        .limit(3);
+
+      return exercises;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
