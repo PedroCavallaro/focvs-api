@@ -15,16 +15,19 @@ export class CreateWorkoutDto {
   day: number;
 
   @IsNotEmpty()
-  exercises: Array<WorkOutItem>;
+  exercises: Array<PerformedWorkoutItem>;
 }
 
-export type WorkOutItem = {
+export type PerformedWorkoutItem = {
   exerciseId: string;
   sets: [
     {
       set_number: number;
       reps: number;
       weight: number;
+      newReps: number;
+      newWeight: number;
+      hasImprovements: boolean;
     }
   ];
 };

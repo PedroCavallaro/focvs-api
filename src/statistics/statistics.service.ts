@@ -15,7 +15,7 @@ export class StatisticsService {
     return await this.repo.lastThree(userId);
   }
 
-  async hoursByWeekAdnMonth(userId: string): Promise<WorkoutHoursResponseDTO> {
+  async hoursByWeekAndMonth(userId: string): Promise<WorkoutHoursResponseDTO> {
     const monthInit = startOfMonth(new Date());
     const weekInit = startOfWeek(new Date(), { weekStartsOn: 0 });
 
@@ -40,6 +40,10 @@ export class StatisticsService {
       weekAmount: weekly,
       monthAmount: monthly
     };
+  }
+
+  async exercisesWithImprovements(userId: string) {
+    return await this.repo.exercisesWithImprovements(userId);
   }
 
   formatMonthAndWeekHours(weekSeconds: number, monthSeconds: number) {

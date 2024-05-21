@@ -1,20 +1,21 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    environment:
-      - JWT_SECRET=123
-      - MONGO_URL=mongodb://root:123@mongo:27017/
-      - DATABASE_URL=postgresql://admin:123@postgres:5432/focvs
-      - REDIS_URL=redis://:123@redis:6379
-    ports:
-      - 3001:3001
-    depends_on:
-      - postgres
-      - mongo
-      - redis
-    command: ['sh', '/app/start.sh']
+  # app:
+  #   build: .
+  #   environment:
+  #     - JWT_SECRET=123
+  #     - MONGO_URL=mongodb://root:123@mongo:27017/
+  #     - DATABASE_URL=postgresql://admin:123@postgres:5432/focvs
+  #     - REDIS_URL=redis://:123@redis:6379
+  #   ports:
+  #     - 3001:3001
+  #     - 5000:5000
+  #   depends_on:
+  #     - postgres
+  #     - mongo
+  #     - redis
+  #   command: ['sh', '/app/start.sh']
   postgres:
     image: postgres
     environment:

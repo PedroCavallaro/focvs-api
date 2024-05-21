@@ -1,5 +1,7 @@
 #!/bin/bash
 
+npx prisma migrate reset --force
+
 echo "Running migrations"
 npx prisma migrate dev
 

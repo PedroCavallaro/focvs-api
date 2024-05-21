@@ -26,11 +26,16 @@ export class StatisticsController {
 
   @Get('hours')
   async getHours(@AuthUser() user: JwtPayloadDTO) {
-    return await this.service.hoursByWeekAdnMonth(user.id);
+    return await this.service.hoursByWeekAndMonth(user.id);
   }
 
   @Get('amount')
   async getWorkoutAmount(@AuthUser() user: JwtPayloadDTO) {
     return await this.service.monthAndWeekWorkouts(user.id);
+  }
+
+  @Get('improvements')
+  async exercisesWithImprovements(@AuthUser() user: JwtPayloadDTO) {
+    return await this.service.exercisesWithImprovements(user.id);
   }
 }
