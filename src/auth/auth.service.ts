@@ -135,7 +135,7 @@ export class AuthService {
 
     await this.repo.updatePassword(user.id, hashedPass);
 
-    await this.cache.del(`${jwt}`);
+    await this.cache.del(jwtToken);
 
     return { status: 'success' };
   }
