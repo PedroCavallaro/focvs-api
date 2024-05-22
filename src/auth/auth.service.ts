@@ -104,7 +104,7 @@ export class AuthService {
     if (!tokenObject)
       throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
 
-    if (tokenObject.token !== tokenDto.token)
+    if (Number(tokenObject.token) !== tokenDto.token)
       throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
 
     tokenObject.status = TokenStatus.VALID;
