@@ -63,17 +63,33 @@ export class AuthRepository {
   }
   async finAccountByEmail(email: string) {
     try {
-      const Account = this.prisma.account.findUnique({
+      const account = this.prisma.account.findUnique({
         where: {
           email
         }
       });
 
-      return Account;
+      return account;
     } catch (error) {
       PrismaService.handleError(error);
     }
   }
+
+  async updatePassword(id: string, password: string) {
+    try {
+      await this.prisma.account.update({
+        where: {
+          id
+        },
+        data: {
+          password
+        }
+      });
+    } catch (error) {
+      PrismaService.handleError(error);
+    }
+  }
+
   async listAll() {
     return await this.prisma.account.findMany();
   }

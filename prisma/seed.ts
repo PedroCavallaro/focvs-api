@@ -143,4 +143,6 @@ async function seed() {
   }
 }
 
-await seed();
+(async () => {
+  await seed();
+})();

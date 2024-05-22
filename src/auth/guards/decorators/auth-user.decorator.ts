@@ -6,5 +6,5 @@ export const AuthUser = createParamDecorator(
     const request: Request = ctx.switchToHttp().getRequest();
 
     return request.user;
-  },
+  }
 );
