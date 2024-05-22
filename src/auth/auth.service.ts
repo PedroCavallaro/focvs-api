@@ -109,7 +109,6 @@ export class AuthService {
 
     tokenObject.status = TokenStatus.VALID;
 
-    await this.cache.del(`${jwtToken}`);
     await this.cache.set(`${jwtToken}`, JSON.stringify(tokenObject), 'EX', 300);
 
     return { status: tokenObject.status };
