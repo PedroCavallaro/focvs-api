@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { JwtService } from 'src/auth/jwt/jwt.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class RecoverPasswordGuard implements CanActivate {
   constructor(@Inject(JwtService) private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

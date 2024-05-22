@@ -71,7 +71,7 @@ export class AuthService {
     return token;
   }
 
-  async getRecoverPasswordToken(recoverDto: GetRecoverPasswordTokenDto) {
+  async generateRecoverPasswordToken(recoverDto: GetRecoverPasswordTokenDto) {
     const account = await this.repo.finAccountByEmail(recoverDto.email);
 
     if (!account)
@@ -97,10 +97,7 @@ export class AuthService {
     return { jwt };
   }
 
-  async validateTokenRecoverPassword(
-    jwt: string,
-    tokenDto: TokenRecoverPasswordDto
-  ) {
+  async validateRecoverToken(jwt: string, tokenDto: TokenRecoverPasswordDto) {
     const jwtToken = jwt.split(' ')[1];
     const tokenObject: TokenObject = JSON.parse(await this.cache.get(jwtToken));
 
@@ -118,7 +115,7 @@ export class AuthService {
     return { status: tokenObject.status };
   }
 
-  async recoverPassword(
+  async changePassword(
     user: JwtPayloadDTO,
     jwt: string,
     newPasswordDto: NewPasswordDto

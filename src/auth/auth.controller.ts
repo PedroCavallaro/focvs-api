@@ -35,26 +35,26 @@ export class AuthController {
 
   @Public()
   @Post('token')
-  async getRecoverPasswordToken(
+  async generateRecoverPasswordToken(
     @Body() recoverDto: GetRecoverPasswordTokenDto
   ) {
-    return await this.service.getRecoverPasswordToken(recoverDto);
+    return await this.service.generateRecoverPasswordToken(recoverDto);
   }
 
   @Post('validate')
-  async validatePassword(
+  async validateRecoverToken(
     @Headers('authorization') jwt: string,
     @Body() tokenDto: TokenRecoverPasswordDto
   ) {
-    return await this.service.validateTokenRecoverPassword(jwt, tokenDto);
+    return await this.service.validateRecoverToken(jwt, tokenDto);
   }
 
-  @Post('recover')
-  async recoverPassword(
+  @Post('change-password')
+  async changePassword(
     @AuthUser() user: JwtPayloadDTO,
     @Headers('authorization') jwt: string,
-    @Body() NewPasswordDto: NewPasswordDto
+    @Body() newPasswordDto: NewPasswordDto
   ) {
-    return await this.service.recoverPassword(user, jwt, NewPasswordDto);
+    return await this.service.changePassword(user, jwt, newPasswordDto);
   }
 }
