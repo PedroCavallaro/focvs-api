@@ -1,9 +1,10 @@
-export enum TokenStatus {
+export enum RecoverPasswordStatus {
   PENDING = 'PENDING',
-  VALID = 'VALID'
+  VALID = 'VALID',
+  SUCCESS = 'SUCCESS'
 }
 
 export type TokenObject = {
   token: string;
-  status: TokenStatus;
+  status: RecoverPasswordStatus;
 };

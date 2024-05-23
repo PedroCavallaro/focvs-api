@@ -10,6 +10,7 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { env } from './shared/env';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RecoverPasswordGuard } from './auth/guards/recover-password.guard';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     {
       provide: APP_GUARD,
       useClass: AuthGuard
-    }
+    },
+    RecoverPasswordGuard
   ]
 })
 export class AppModule {}

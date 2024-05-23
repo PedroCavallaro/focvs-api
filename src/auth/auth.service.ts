@@ -7,11 +7,11 @@ import { SiginDto } from './dtos/sign-in';
 import { AppError } from 'src/shared/error/AppError';
 import { GetRecoverPasswordTokenDto } from './dtos/get-recover-password-token.dto';
 import { CacheService } from 'src/shared/cache/cache.service';
-import { TokenRecoverPasswordDto } from './dtos/token-recover-password';
+import { PasswordRecoverCodeDto } from './dtos/password-recover-code';
 import { JwtPayloadDTO } from './dtos/jwt-payload';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { NewPasswordDto } from './dtos/new-password';
-import { TokenObject, TokenStatus } from './enums/token.status';
+import { TokenObject, RecoverPasswordStatus } from './enums/token.status';
 
 @Injectable()
 export class AuthService {
@@ -83,7 +83,7 @@ export class AuthService {
 
     const tokenObject: TokenObject = {
       token,
-      status: TokenStatus.PENDING
+      status: RecoverPasswordStatus.PENDING
     };
 
     this.mailService.sendMail(
@@ -92,26 +92,26 @@ export class AuthService {
       `Seu token de recuperação de senha é: ${token}`
     );
 
-    await this.cache.set(`${jwt}`, JSON.stringify(tokenObject), 'EX', 300);
+    await this.cache.set(jwt, JSON.stringify(tokenObject), 'EX', 300);
 
     return { jwt };
   }
 
-  async validateRecoverToken(jwt: string, tokenDto: TokenRecoverPasswordDto) {
+  async validateRecoverToken(jwt: string, tokenDto: PasswordRecoverCodeDto) {
     const jwtToken = jwt.split(' ')[1];
     const tokenObject: TokenObject = JSON.parse(await this.cache.get(jwtToken));
 
     if (!tokenObject)
-      throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
+      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
 
-    if (Number(tokenObject.token) !== tokenDto.token)
-      throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
+    if (Number(tokenObject.token) !== tokenDto.code)
+      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
-    tokenObject.status = TokenStatus.VALID;
+    tokenObject.status = RecoverPasswordStatus.VALID;
 
-    await this.cache.set(`${jwtToken}`, JSON.stringify(tokenObject), 'EX', 300);
+    await this.cache.set(jwtToken, JSON.stringify(tokenObject), 'EX', 300);
 
-    return { status: tokenObject.status };
+    return { status: RecoverPasswordStatus.VALID };
   }
 
   async changePassword(
@@ -123,10 +123,10 @@ export class AuthService {
     const tokenObject: TokenObject = JSON.parse(await this.cache.get(jwtToken));
 
     if (!tokenObject)
-      throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
+      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
 
-    if (tokenObject.status !== TokenStatus.VALID)
-      throw new AppError('Token inválido', HttpStatus.NOT_FOUND);
+    if (tokenObject.status !== RecoverPasswordStatus.VALID)
+      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
     const hashedPass = await this.passwordService.generateHash(
       newPasswordDto.password
@@ -136,7 +136,7 @@ export class AuthService {
 
     await this.cache.del(jwtToken);
 
-    return { status: 'success' };
+    return { status: RecoverPasswordStatus.SUCCESS };
   }
 
   private generateOneTimeToken(): string {

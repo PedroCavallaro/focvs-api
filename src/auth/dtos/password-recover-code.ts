@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class TokenRecoverPasswordDto {
+export class PasswordRecoverCodeDto {
   @IsNotEmpty()
-  token: number;
+  code: number;
 }

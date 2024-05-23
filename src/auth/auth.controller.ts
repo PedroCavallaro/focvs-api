@@ -6,7 +6,7 @@ import { SiginDto } from './dtos/sign-in';
 import { Public } from './guards/decorators/public.decorator';
 import { GetRecoverPasswordTokenDto } from './dtos/get-recover-password-token.dto';
 import { AuthUser } from './guards/decorators';
-import { TokenRecoverPasswordDto } from './dtos/token-recover-password';
+import { PasswordRecoverCodeDto } from './dtos/password-recover-code';
 import { JwtPayloadDTO } from './dtos/jwt-payload';
 import { NewPasswordDto } from './dtos/new-password';
 
@@ -44,9 +44,9 @@ export class AuthController {
   @Post('validate')
   async validateRecoverToken(
     @Headers('authorization') jwt: string,
-    @Body() tokenDto: TokenRecoverPasswordDto
+    @Body() passwordRecoverCodeDto: PasswordRecoverCodeDto
   ) {
-    return await this.service.validateRecoverToken(jwt, tokenDto);
+    return await this.service.validateRecoverToken(jwt, passwordRecoverCodeDto);
   }
 
   @Post('change-password')
