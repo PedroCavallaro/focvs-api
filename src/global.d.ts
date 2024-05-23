@@ -5,5 +5,6 @@ export {};
 declare module 'express' {
   interface Request {
     user?: JwtPayloadDTO;
+    token?: string;
   }
 }

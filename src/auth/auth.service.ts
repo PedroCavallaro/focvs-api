@@ -7,11 +7,13 @@ import { SiginDto } from './dtos/sign-in';
 import { AppError } from 'src/shared/error/AppError';
 import { GetRecoverPasswordTokenDto } from './dtos/get-recover-password-token.dto';
 import { CacheService } from 'src/shared/cache/cache.service';
-import { PasswordRecoverCodeDto } from './dtos/password-recover-code';
+import { RecoverPasswordCodeDto } from './dtos/recover-password-code';
 import { JwtPayloadDTO } from './dtos/jwt-payload';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { NewPasswordDto } from './dtos/new-password';
-import { TokenObject, RecoverPasswordStatus } from './enums/token.status';
+import { CachedCodeObject } from './types/cached-code-object.type';
+import { RecoverPasswordStatus } from './enums/recover-password.status';
+import { RecoverPasswordResponse } from './dtos/recover-password-response';
 
 @Injectable()
 export class AuthService {
@@ -73,16 +75,13 @@ export class AuthService {
 
   async generateRecoverPasswordToken(recoverDto: GetRecoverPasswordTokenDto) {
     const account = await this.repo.finAccountByEmail(recoverDto.email);
-
     if (!account)
       throw new AppError('Conta não encontrada', HttpStatus.NOT_FOUND);
 
     const jwt = this.jwtService.signToken(account.id, account.email, '', '');
-
     const token = this.generateOneTimeToken();
-
-    const tokenObject: TokenObject = {
-      token,
+    const cachedCodeObject: CachedCodeObject = {
+      code: token,
       status: RecoverPasswordStatus.PENDING
     };
 
@@ -92,26 +91,26 @@ export class AuthService {
       `Seu token de recuperação de senha é: ${token}`
     );
 
-    await this.cache.set(jwt, JSON.stringify(tokenObject), 'EX', 300);
+    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300);
 
     return { jwt };
   }
 
-  async validateRecoverToken(jwt: string, tokenDto: PasswordRecoverCodeDto) {
-    const jwtToken = jwt.split(' ')[1];
-    const tokenObject: TokenObject = JSON.parse(await this.cache.get(jwtToken));
+  async validateRecoverToken(
+    jwt: string,
+    recoverPasswordCodeDto: RecoverPasswordCodeDto
+  ) {
+    const cachedCodeObject: CachedCodeObject =
+      await this.getCachedCodeObject(jwt);
 
-    if (!tokenObject)
-      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
-
-    if (Number(tokenObject.token) !== tokenDto.code)
+    if (Number(cachedCodeObject.code) !== recoverPasswordCodeDto.code)
       throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
-    tokenObject.status = RecoverPasswordStatus.VALID;
+    cachedCodeObject.status = RecoverPasswordStatus.VALID;
 
-    await this.cache.set(jwtToken, JSON.stringify(tokenObject), 'EX', 300);
+    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300);
 
-    return { status: RecoverPasswordStatus.VALID };
+    return new RecoverPasswordResponse(RecoverPasswordStatus.VALID);
   }
 
   async changePassword(
@@ -119,24 +118,19 @@ export class AuthService {
     jwt: string,
     newPasswordDto: NewPasswordDto
   ) {
-    const jwtToken = jwt.split(' ')[1];
-    const tokenObject: TokenObject = JSON.parse(await this.cache.get(jwtToken));
+    const cachedCodeObject: CachedCodeObject =
+      await this.getCachedCodeObject(jwt);
 
-    if (!tokenObject)
-      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
-
-    if (tokenObject.status !== RecoverPasswordStatus.VALID)
+    if (cachedCodeObject.status !== RecoverPasswordStatus.VALID)
       throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
     const hashedPass = await this.passwordService.generateHash(
       newPasswordDto.password
     );
-
     await this.repo.updatePassword(user.id, hashedPass);
+    await this.cache.del(jwt);
 
-    await this.cache.del(jwtToken);
-
-    return { status: RecoverPasswordStatus.SUCCESS };
+    return new RecoverPasswordResponse(RecoverPasswordStatus.SUCCESS);
   }
 
   private generateOneTimeToken(): string {
@@ -145,5 +139,13 @@ export class AuthService {
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
     return randomNumber.toString();
+  }
+
+  private async getCachedCodeObject(jwt: string): Promise<CachedCodeObject> {
+    const cachedCodeObject = await this.cache.get(jwt);
+    if (!cachedCodeObject)
+      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
+
+    return JSON.parse(cachedCodeObject);
   }
 }

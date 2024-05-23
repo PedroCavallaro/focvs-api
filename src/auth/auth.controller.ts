@@ -1,4 +1,11 @@
-import { Body, Controller, Headers, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  Post,
+  Res,
+  UseGuards
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateAccountDto } from './dtos/create-account';
@@ -6,9 +13,11 @@ import { SiginDto } from './dtos/sign-in';
 import { Public } from './guards/decorators/public.decorator';
 import { GetRecoverPasswordTokenDto } from './dtos/get-recover-password-token.dto';
 import { AuthUser } from './guards/decorators';
-import { PasswordRecoverCodeDto } from './dtos/password-recover-code';
+import { RecoverPasswordCodeDto } from './dtos/recover-password-code';
 import { JwtPayloadDTO } from './dtos/jwt-payload';
 import { NewPasswordDto } from './dtos/new-password';
+import { AuthToken } from './guards/decorators/auth-token.decorator';
+import { RecoverPasswordGuard } from './guards/recover-password.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -41,18 +50,20 @@ export class AuthController {
     return await this.service.generateRecoverPasswordToken(recoverDto);
   }
 
+  @UseGuards(RecoverPasswordGuard)
   @Post('validate')
   async validateRecoverToken(
-    @Headers('authorization') jwt: string,
-    @Body() passwordRecoverCodeDto: PasswordRecoverCodeDto
+    @AuthToken() jwt: string,
+    @Body() recoverPasswordCodeDto: RecoverPasswordCodeDto
   ) {
-    return await this.service.validateRecoverToken(jwt, passwordRecoverCodeDto);
+    return await this.service.validateRecoverToken(jwt, recoverPasswordCodeDto);
   }
 
+  @UseGuards(RecoverPasswordGuard)
   @Post('change-password')
   async changePassword(
     @AuthUser() user: JwtPayloadDTO,
-    @Headers('authorization') jwt: string,
+    @AuthToken() jwt: string,
     @Body() newPasswordDto: NewPasswordDto
   ) {
     return await this.service.changePassword(user, jwt, newPasswordDto);

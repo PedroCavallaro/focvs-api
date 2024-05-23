@@ -22,6 +22,7 @@ export class RecoverPasswordGuard implements CanActivate {
     try {
       const payload = this.jwtService.verifyToken(token);
 
+      request['token'] = token;
       request['user'] = payload;
     } catch {
       throw new UnauthorizedException();

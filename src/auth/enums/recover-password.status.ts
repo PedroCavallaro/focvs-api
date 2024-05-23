@@ -3,8 +3,3 @@ export enum RecoverPasswordStatus {
   VALID = 'VALID',
   SUCCESS = 'SUCCESS'
 }
-
-export type TokenObject = {
-  token: string;
-  status: RecoverPasswordStatus;
-};
