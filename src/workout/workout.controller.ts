@@ -1,21 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query
-} from '@nestjs/common';
-import { WorkoutService } from './workout.service';
-import { Public } from 'src/auth/guards/decorators/public.decorator';
-import { CreateWorkoutDto } from './dto/create-workout.dto';
-import { UpdateWorkouDto } from './dto/update-workout.dto';
-import { PaginatedWorkoutDTO, PerformedWorkoutDto } from './dto';
-import { AuthUser } from 'src/auth/guards/decorators';
-import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload';
-import { DeleteWorkoutDTO } from './dto/delete-workout.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
+import { WorkoutService } from './workout.service'
+import { Public } from 'src/auth/guards/decorators/public.decorator'
+import { CreateWorkoutDto } from './dto/create-workout.dto'
+import { UpdateWorkouDto } from './dto/update-workout.dto'
+import { PaginatedWorkoutDTO } from './dto'
+import { AuthUser } from 'src/auth/guards/decorators'
+import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
+import { DeleteWorkoutDTO } from './dto/delete-workout.dto'
 
 @Controller('workout')
 export class WorkoutController {
@@ -24,77 +15,72 @@ export class WorkoutController {
   @Post('new')
   @Public()
   async createWorkout(@Body() workoutDto: CreateWorkoutDto) {
-    const workout = await this.service.createWorkout(workoutDto);
+    const workout = await this.service.createWorkout(workoutDto)
 
-    return workout;
+    return workout
   }
 
-  @Post('new/performed')
-  async savePerformedWorkout(
-    @Body() performedWorkoutDto: PerformedWorkoutDto,
-    @AuthUser() user: JwtPayloadDTO
-  ) {
-    const performedWorkout = await this.service.savePerformed(
-      user.id,
-      performedWorkoutDto
-    );
+  // @Post('new/performed')
+  // async savePerformedWorkout(
+  //   @Body() performedWorkoutDto: PerformedWorkoutDto,
+  //   @AuthUser() user: JwtPayloadDTO
+  // ) {
+  //   const performedWorkout = await this.service.savePerformed(
+  //     user.id,
+  //     performedWorkoutDto
+  //   );
 
-    return performedWorkout;
-  }
+  //   return performedWorkout;
+  // }
 
   @Get('user/:id')
   @Public()
   async getUserWorkouts(@Param('id') id: string) {
-    const userWorkout = await this.service.getUserWorkouts(id);
+    const userWorkout = await this.service.getUserWorkouts(id)
 
-    return userWorkout;
+    return userWorkout
   }
 
   @Get(':workoutId')
   async getWorkout(@Param('workoutId') workoutId: string) {
-    const workout = await this.service.getWorkout(workoutId);
+    const workout = await this.service.getWorkout(workoutId)
 
-    return workout;
+    return workout
   }
-
-  // @Get(':workoutId/shared')
 
   @Get('performed/:id')
   @Public()
   async listPerformedWorkouts(@Param('id') id: string) {
-    return await this.service.listPerformedWorkouts(id);
+    // return await this.service.listPerformedWorkouts(id);
   }
 
   @Get()
   @Public()
   async listAll() {
-    return await this.service.listAll();
+    return await this.service.listAll()
   }
 
   @Get('search/paginate')
   @Public()
   async searchPaginated(@Query() q: PaginatedWorkoutDTO) {
-    return await this.service.searchPaginated(q);
+    return await this.service.searchPaginated(q)
   }
 
   @Put()
   async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
-    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto);
+    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto)
 
-    return updatedWorkout;
+    return updatedWorkout
   }
 
   @Delete()
   @Public()
-  async deleteUserWorkouts(
-    @AuthUser() user: JwtPayloadDTO,
-    { workoutId }: DeleteWorkoutDTO
-  ) {
-    return await this.service.deleteWorkout(user.id, workoutId);
+  async deleteUserWorkouts(@AuthUser() user: JwtPayloadDTO, { workoutId }: DeleteWorkoutDTO) {
+    return await this.service.deleteWorkout(user.id, workoutId)
   }
   @Delete('performed')
   @Public()
   delteWorkouts() {
-    return this.service.deltePermormed();
+    // return this.service.deltePermormed();
   }
 }
