@@ -1,21 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/shared/db/prisma.service';
-import { ExerciseDto } from './dto/exercise.dto';
-import { MuscleDto } from './dto/muscle.dto';
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from 'src/shared/db/prisma.service'
+import { ExerciseDto } from './dto/exercise.dto'
+import { MuscleDto } from './dto/muscle.dto'
 
 @Injectable()
 export class ExerciseRepository {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getExercisesByMuscle(muscle: string) {
     try {
       return await this.prisma.exercise.findMany({
         where: {
-          muscleId: muscle,
-        },
-      });
+          muscleId: muscle
+        }
+      })
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -29,33 +29,33 @@ export class ExerciseRepository {
           gif_url: true,
           muscle: {
             select: {
-              name: true,
-            },
-          },
-        },
-      });
+              name: true
+            }
+          }
+        }
+      })
 
-      return exercises;
+      return exercises
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async getMuscleByName(name: string) {
     try {
       return await this.prisma.muscle.findFirst({
         where: {
-          name,
-        },
-      });
+          name
+        }
+      })
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async createExercise({
     description,
     gif_url,
     muscleId,
-    name,
+    name
   }: ExerciseDto): Promise<ExerciseDto> {
     try {
       const exercise = await this.prisma.exercise.create({
@@ -63,25 +63,25 @@ export class ExerciseRepository {
           description,
           gif_url,
           name,
-          muscleId,
-        },
-      });
-      return exercise;
+          muscleId
+        }
+      })
+      return exercise
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async searchExercise(name: string): Promise<ExerciseDto> {
     try {
       const exercise = await this.prisma.exercise.findFirst({
         where: {
-          name,
-        },
-      });
+          name
+        }
+      })
 
-      return exercise;
+      return exercise
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -90,36 +90,36 @@ export class ExerciseRepository {
       const muscle = await this.prisma.muscle.create({
         data: {
           name,
-          picture_url: picture_url ?? '',
-        },
-      });
+          picture_url: picture_url ?? ''
+        }
+      })
 
-      return muscle;
+      return muscle
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async searchMuscle(name: string): Promise<MuscleDto> {
     try {
       const muscle = await this.prisma.muscle.findFirst({
         where: {
-          name,
-        },
-      });
+          name
+        }
+      })
 
-      return muscle;
+      return muscle
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
   async getMuscles() {
     try {
-      const muscles = await this.prisma.muscle.findMany();
+      const muscles = await this.prisma.muscle.findMany()
 
-      return muscles;
+      return muscles
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 }
