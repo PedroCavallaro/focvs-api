@@ -1,10 +1,10 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { Request } from 'express';
 
-export const AuthUser = createParamDecorator(
+export const AuthToken = createParamDecorator(
   async (_: unknown, ctx: ExecutionContext) => {
     const request: Request = ctx.switchToHttp().getRequest();
 
-    return request.user;
+    return request.token;
   }
 );

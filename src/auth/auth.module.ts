@@ -7,6 +7,7 @@ import { AuthRepository } from './auth.repository';
 import { AuthGuard } from './guards/auth.guard';
 import { PrismaModule } from 'src/shared/db/prisma.module';
 import { CacheModule } from 'src/shared/cache/cache.module';
+import { MailService } from 'src/jobs/mail/mail.service';
 
 @Module({
   imports: [PrismaModule, CacheModule],
@@ -16,7 +17,8 @@ import { CacheModule } from 'src/shared/cache/cache.module';
     AuthService,
     AuthGuard,
     JwtService,
-    PasswordService
+    PasswordService,
+    MailService
   ],
   exports: [AuthService, AuthGuard, JwtService]
 })
