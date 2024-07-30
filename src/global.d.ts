@@ -1,10 +1,10 @@
-import { JwtPayloadDTO } from './auth/dtos/jwt-payload';
+import { JwtPayloadDTO } from './auth/dtos/jwt-payload'
 
-export {};
+export {}
 
 declare module 'express' {
   interface Request {
-    user?: JwtPayloadDTO;
-    token?: string;
+    user?: JwtPayloadDTO
+    token?: string
   }
 }

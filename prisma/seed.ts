@@ -1,19 +1,11 @@
-import {
-  PrismaClient,
-  User,
-  Account,
-  Muscle,
-  Exercise,
-  Workout,
-  WorkoutItem
-} from '@prisma/client';
-import { faker } from '@faker-js/faker';
+import { PrismaClient, User, Account, Muscle, Exercise, Workout, WorkoutItem } from '@prisma/client'
+import { faker } from '@faker-js/faker'
 
 async function seed() {
   try {
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient()
 
-    const userPromises: Promise<User>[] = [];
+    const userPromises: Promise<User>[] = []
 
     for (let i = 0; i < 5; i++) {
       const userPromise = prisma.user.create({
@@ -21,13 +13,13 @@ async function seed() {
           name: faker.internet.userName(),
           image_url: 'https://i.pravatar.cc/150?u=' + i
         }
-      });
-      userPromises.push(userPromise);
+      })
+      userPromises.push(userPromise)
     }
 
-    const users: User[] = await Promise.all(userPromises);
+    const users: User[] = await Promise.all(userPromises)
 
-    const accountPromises: Promise<Account>[] = [];
+    const accountPromises: Promise<Account>[] = []
 
     for (const user of users) {
       const accountPromise = prisma.account.create({
@@ -36,13 +28,13 @@ async function seed() {
           password: faker.internet.password(),
           userId: user.id
         }
-      });
-      accountPromises.push(accountPromise);
+      })
+      accountPromises.push(accountPromise)
     }
 
-    await Promise.all(accountPromises);
+    await Promise.all(accountPromises)
 
-    const musclePromise: Promise<Muscle>[] = [];
+    const musclePromise: Promise<Muscle>[] = []
     const muscles = [
       'Peitoral',
       'Biceps',
@@ -54,7 +46,7 @@ async function seed() {
       'Glúteo',
       'Abdômen',
       'Trapézio'
-    ];
+    ]
 
     for (let i = 0; i < 10; i++) {
       const muscle = prisma.muscle.create({
@@ -62,13 +54,13 @@ async function seed() {
           name: muscles[i],
           picture_url: 'https://i.pravatar.cc/150?u=' + i
         }
-      });
-      musclePromise.push(muscle);
+      })
+      musclePromise.push(muscle)
     }
 
-    const musclesSaved: Muscle[] = await Promise.all(musclePromise);
+    const musclesSaved: Muscle[] = await Promise.all(musclePromise)
 
-    const exercisePromises: Promise<Exercise>[] = [];
+    const exercisePromises: Promise<Exercise>[] = []
     const exercise = [
       `Supino`,
       `Rosca direta`,
@@ -80,26 +72,25 @@ async function seed() {
       `Stiff`,
       `Abdominal`,
       `Elevação de ombros`
-    ];
+    ]
 
     for (const muscle of musclesSaved) {
       const exercisePromise = prisma.exercise.create({
         data: {
           name: exercise[Math.floor(Math.random() * exercise.length)],
           description: faker.lorem.sentence(),
-          gif_url:
-            'https://i.pravatar.cc/150?u=' + Math.floor(Math.random() * 10),
+          gif_url: 'https://i.pravatar.cc/150?u=' + Math.floor(Math.random() * 10),
           muscleId: muscle.id
         }
-      });
-      exercisePromises.push(exercisePromise);
+      })
+      exercisePromises.push(exercisePromise)
     }
 
-    const exercisesSaved: Exercise[] = await Promise.all(exercisePromises);
+    const exercisesSaved: Exercise[] = await Promise.all(exercisePromises)
 
-    console.log(exercisesSaved);
+    console.log(exercisesSaved)
 
-    const workoutsPromise: Promise<Workout>[] = [];
+    const workoutsPromise: Promise<Workout>[] = []
 
     for (let i = 0; i < users.length; i++) {
       workoutsPromise.push(
@@ -111,11 +102,11 @@ async function seed() {
             userId: users[i].id
           }
         })
-      );
+      )
     }
-    const workouts = await Promise.all(workoutsPromise);
-    console.log(workouts);
-    const workoutItemPromises: Promise<WorkoutItem>[] = [];
+    const workouts = await Promise.all(workoutsPromise)
+    console.log(workouts)
+    const workoutItemPromises: Promise<WorkoutItem>[] = []
 
     for (const workout of workouts) {
       for (let i = 0; i < 5; i++) {
@@ -125,24 +116,20 @@ async function seed() {
             reps: Math.floor(Math.random() * 10) + 1,
             weight: Math.floor(Math.random() * 100) + 1,
             workoutId: workout.id,
-            exerciseId:
-              exercisesSaved[Math.floor(Math.random() * exercisesSaved.length)]
-                .id
+            exerciseId: exercisesSaved[Math.floor(Math.random() * exercisesSaved.length)].id
           }
-        });
-        workoutItemPromises.push(workoutItemPromise);
+        })
+        workoutItemPromises.push(workoutItemPromise)
       }
     }
 
-    await Promise.all(workoutItemPromises);
+    await Promise.all(workoutItemPromises)
 
-    prisma.$disconnect();
+    prisma.$disconnect()
   } catch (error) {
-    console.error(error);
-    throw error;
+    console.error(error)
+    throw error
   }
 }
 
-(async () => {
-  await seed();
-})();
+seed()
