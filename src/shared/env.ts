@@ -17,6 +17,12 @@ const getEnv = () => ({
     mongo: process.env.MONGO_URL,
     redis: process.env.REDIS_URL
   },
+  mailer: {
+    host: process.env.MAILER_HOST,
+    port: process.env.MAILER_PORT,
+    user: process.env.MAILER_AUTH_USER,
+    pass: process.env.MAILER_AUTH_PASS
+  },
 
   isProduction(): boolean {
     return (
