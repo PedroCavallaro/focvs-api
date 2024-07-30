@@ -1,70 +1,59 @@
-import { Injectable } from '@nestjs/common';
-import { WorkoutRepository } from './workout.repository';
-import { CreateWorkoutDto } from './dto/create-workout.dto';
-import {
-  PaginatedWorkoutDTO,
-  PerformedWorkoutDto,
-  PrismaWorkoutDTO
-} from './dto';
-import { MongoWorkoutRepository } from './workout.mongo.repository';
-import { parsePagination } from 'src/shared/utils/pagination';
+import { Injectable } from '@nestjs/common'
+import { WorkoutRepository } from './workout.repository'
+import { CreateWorkoutDto } from './dto/create-workout.dto'
+import { PaginatedWorkoutDTO, PerformedWorkoutDto, PrismaWorkoutDTO } from './dto'
+import { parsePagination } from 'src/shared/utils/pagination'
 
 @Injectable()
 export class WorkoutService {
-  constructor(
-    private readonly repo: WorkoutRepository,
-    private readonly mongoRepo: MongoWorkoutRepository
-  ) {}
+  constructor(private readonly repo: WorkoutRepository) {}
 
   async createWorkout(workoutDto: CreateWorkoutDto) {
-    const workout = await this.repo.saveWorkout(workoutDto);
+    const workout = await this.repo.saveWorkout(workoutDto)
 
-    return workout;
+    return workout
   }
   async searchPaginated(q: PaginatedWorkoutDTO) {
-    const [workouts, count] = await this.repo.searchPaginated(q);
+    const [workouts, count] = await this.repo.searchPaginated(q)
 
-    return parsePagination(workouts, q, count);
+    return parsePagination(workouts, q, count)
   }
-  async listPerformedWorkouts(id: string) {
-    return await this.mongoRepo.listPerformedWorkouts(id);
-  }
-  deltePermormed() {
-    return this.mongoRepo.deleteWorkouts();
-  }
-  async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
-    const performedWorkout = await this.mongoRepo.savePerformed(
-      id,
-      performedWorkoutDto
-    );
+  // async listPerformedWorkouts(id: string) {
+  //   return await this.mongoRepo.listPerformedWorkouts(id)
+  // }
+  // deltePermormed() {
+  //   return this.mongoRepo.deleteWorkouts()
+  // }
+  // async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
+  //   const performedWorkout = await this.mongoRepo.savePerformed(id, performedWorkoutDto)
 
-    return performedWorkout;
-  }
+  //   return performedWorkout
+  // }
 
   async updateWorkout(updateWorkoutDto) {
-    const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto);
+    const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto)
 
-    return updatedWorkout;
+    return updatedWorkout
   }
 
   async getUserWorkouts(id: string) {
-    const workouts = await this.repo.getUserWokouts(id);
+    const workouts = await this.repo.getUserWokouts(id)
 
-    return this.transformeArray(workouts);
+    return this.transformeArray(workouts)
   }
 
   async getWorkout(workoutId: string) {
-    const workout = await this.repo.getWorkout(workoutId);
+    const workout = await this.repo.getWorkout(workoutId)
 
-    return this.transformeArray([workout]);
+    return this.transformeArray([workout])
   }
 
   async listAll() {
-    return await this.repo.listAll();
+    return await this.repo.listAll()
   }
 
   async deleteWorkout(userId: string, workoutId: string) {
-    return await this.repo.deleteWorkout(userId, workoutId);
+    return await this.repo.deleteWorkout(userId, workoutId)
   }
 
   private transformeArray(array: PrismaWorkoutDTO[]) {
@@ -76,20 +65,20 @@ export class WorkoutService {
       exercises: item.workoutItem.reduce(
         (
           acc: {
-            name: string;
-            sets: { reps: number; weight: number; set_number: number }[];
+            name: string
+            sets: { reps: number; weight: number; set_number: number }[]
           }[],
           currentItem
         ) => {
           const existingExerciseIndex = acc.findIndex(
             (exercise) => exercise.name === currentItem.exercise.name
-          );
+          )
           if (existingExerciseIndex !== -1) {
             acc[existingExerciseIndex].sets.push({
               set_number: currentItem.set_number,
               reps: currentItem.reps,
               weight: currentItem.weight
-            });
+            })
           } else {
             acc.push({
               name: currentItem.exercise.name,
@@ -100,12 +89,12 @@ export class WorkoutService {
                   weight: currentItem.weight
                 }
               ]
-            });
+            })
           }
-          return acc;
+          return acc
         },
         []
       )
-    }));
+    }))
   }
 }

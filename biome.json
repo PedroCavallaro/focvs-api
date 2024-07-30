@@ -4,6 +4,9 @@
     "enabled": true
   },
   "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    },
     "formatter": {
       "quoteStyle": "single",
       "trailingCommas": "none",
@@ -20,12 +23,15 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "style": {
+        "useImportType": "off"
+      },
       "correctness": {
         "noUnusedImports": {
           "level": "warn"
         }
       },
-      "recommended": false
+      "recommended": true
     }
   },
   "files": {
