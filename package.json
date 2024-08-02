@@ -9,6 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "update:utils": "rm -Rf node_modules/@pedrocavallaro && bun install @pedrocavallaro/focvs-utils",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -21,13 +22,13 @@
     "seed": "bun prisma/seed.ts"
   },
   "dependencies": {
-    "@PedroCavallaro/focvs-utils": "^0.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.0.4",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.1",
+    "@pedrocavallaro/focvs-utils": "^0.0.3",
     "@prisma/client": "5.11.0",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
