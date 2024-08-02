@@ -9,7 +9,7 @@ import { JwtPayloadDTO } from './dtos/jwt-payload'
 import { NewPasswordDto } from './dtos/new-password'
 import { AuthToken } from './guards/decorators/auth-token.decorator'
 import { RecoverPasswordGuard } from './guards/recover-password.guard'
-import { Public, AuthUser } from '@PedroCavallaro/focvs-utils'
+import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
 
 @Controller('auth')
 export class AuthController {

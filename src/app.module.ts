@@ -9,8 +9,8 @@ import { PrismaModule } from './shared/db/prisma.module'
 // import { env } from './shared/env'
 import { ScheduleModule } from '@nestjs/schedule'
 import { RecoverPasswordGuard } from './auth/guards/recover-password.guard'
-import { AuthGuard, FocvsSharedStuffModule, JwtService } from '@PedroCavallaro/focvs-utils'
 import { APP_GUARD, Reflector } from '@nestjs/core'
+import { FocvsSharedStuffModule, JwtService, AuthGuard } from '@pedrocavallaro/focvs-utils'
 
 @Module({
   imports: [

@@ -5,7 +5,7 @@ import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { PaginatedWorkoutDTO } from './dto'
 import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
 import { DeleteWorkoutDTO } from './dto/delete-workout.dto'
-import { AuthUser, Public } from '@PedroCavallaro/focvs-utils'
+import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
 
 @Controller('workout')
 export class WorkoutController {

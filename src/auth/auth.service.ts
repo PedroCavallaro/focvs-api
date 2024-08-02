@@ -13,7 +13,7 @@ import { NewPasswordDto } from './dtos/new-password'
 import { CachedCodeObject } from './types/cached-code-object.type'
 import { RecoverPasswordStatus } from './enums/recover-password.status'
 import { RecoverPasswordResponse } from './dtos/recover-password-response'
-import { JwtService } from '@PedroCavallaro/focvs-utils'
+import { JwtService } from '@pedrocavallaro/focvs-utils'
 
 @Injectable()
 export class AuthService {
