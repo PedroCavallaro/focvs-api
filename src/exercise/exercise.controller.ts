@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ExerciseService } from './exercise.service';
-import { ExerciseDto } from './dto/exercise.dto';
-import { MuscleDto } from './dto/muscle.dto';
-import { Public } from 'src/auth/guards/decorators/public.decorator';
+import { Body, Controller, Get, Post } from '@nestjs/common'
+import { ExerciseService } from './exercise.service'
+import { ExerciseDto } from './dto/exercise.dto'
+import { MuscleDto } from './dto/muscle.dto'
+import { Public } from '@PedroCavallaro/focvs-utils'
 
 @Controller('exercise')
 export class ExerciseController {
@@ -10,32 +10,32 @@ export class ExerciseController {
 
   @Get()
   async getExercises() {
-    const exercises = await this.service.getExercises();
+    const exercises = await this.service.getExercises()
 
-    return exercises;
+    return exercises
   }
 
   @Get('/muscle')
   @Public()
   async getMuscles() {
-    const muscles = await this.service.getMuscles();
+    const muscles = await this.service.getMuscles()
 
-    return muscles;
+    return muscles
   }
 
   @Post()
   @Public()
   async createExercise(@Body() exercise: ExerciseDto) {
-    const exerciseCreated = await this.service.createExercise(exercise);
+    const exerciseCreated = await this.service.createExercise(exercise)
 
-    return exerciseCreated;
+    return exerciseCreated
   }
 
   @Post('/muscle')
   @Public()
   async createMuscle(@Body() muscle: MuscleDto) {
-    const muscleCreated = await this.service.createMuscle(muscle);
+    const muscleCreated = await this.service.createMuscle(muscle)
 
-    return muscleCreated;
+    return muscleCreated
   }
 }

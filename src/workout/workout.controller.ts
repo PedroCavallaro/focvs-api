@@ -1,12 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { WorkoutService } from './workout.service'
-import { Public } from 'src/auth/guards/decorators/public.decorator'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { PaginatedWorkoutDTO } from './dto'
-import { AuthUser } from 'src/auth/guards/decorators'
 import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
 import { DeleteWorkoutDTO } from './dto/delete-workout.dto'
+import { AuthUser, Public } from '@PedroCavallaro/focvs-utils'
 
 @Controller('workout')
 export class WorkoutController {

@@ -4,34 +4,34 @@ import {
   Inject,
   Injectable,
   UnauthorizedException
-} from '@nestjs/common';
-import { Request } from 'express';
-import { JwtService } from 'src/auth/jwt/jwt.service';
+} from '@nestjs/common'
+import { JwtService } from '@PedroCavallaro/focvs-utils'
+import { Request } from 'express'
 
 @Injectable()
 export class RecoverPasswordGuard implements CanActivate {
   constructor(@Inject(JwtService) private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const request = context.switchToHttp().getRequest()
+    const token = this.extractTokenFromHeader(request)
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
     try {
-      const payload = this.jwtService.verifyToken(token);
+      const payload = this.jwtService.verifyToken(token)
 
-      request['token'] = token;
-      request['user'] = payload;
+      request['token'] = token
+      request['user'] = payload
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    return true;
+    return true
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(' ') ?? []
+    return type === 'Bearer' ? token : undefined
   }
 }

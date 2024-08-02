@@ -1,2 +1,1 @@
-export * from './auth-user.decorator';
-export * from './public.decorator';
+export * from './auth-token.decorator'
