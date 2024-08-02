@@ -3,7 +3,6 @@ import { CreateAccountDto } from './dtos/create-account'
 import { PasswordService } from 'src/auth/password/password.service'
 import { AuthRepository } from './auth.repository'
 import { SiginDto } from './dtos/sign-in'
-import { AppError } from 'src/shared/error/AppError'
 import { GetRecoverPasswordTokenDto } from './dtos/get-recover-password-token.dto'
 import { CacheService } from 'src/shared/cache/cache.service'
 import { RecoverPasswordCodeDto } from './dtos/recover-password-code'
@@ -13,7 +12,7 @@ import { NewPasswordDto } from './dtos/new-password'
 import { CachedCodeObject } from './types/cached-code-object.type'
 import { RecoverPasswordStatus } from './enums/recover-password.status'
 import { RecoverPasswordResponse } from './dtos/recover-password-response'
-import { JwtService } from '@pedrocavallaro/focvs-utils'
+import { AppError, JwtService } from '@pedrocavallaro/focvs-utils'
 
 @Injectable()
 export class AuthService {
