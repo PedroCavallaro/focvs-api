@@ -19,9 +19,13 @@ export class ExerciseRepository {
     }
   }
 
-  async getExercises() {
+  async getExercises(muscleId: string) {
     try {
+      console.log(muscleId);
       const exercises = await this.prisma.exercise.findMany({
+        where: {
+          muscleId,
+        },
         select: {
           id: true,
           name: true,

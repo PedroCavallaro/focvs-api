@@ -37,14 +37,14 @@ export class ExerciseService {
     return exercise
   }
 
-  async getExercises() {
-    const cachedExercises = await this.cache.get('exercise')
+  async getExercises(muscleId: string) {
+    const cachedExercises = await this.cache.get(`@focvs:${muscleId}`)
 
     if (cachedExercises) return JSON.parse(cachedExercises)
 
-    const exercises = await this.repo.getExercises()
+    const exercises = await this.repo.getExercises(muscleId)
 
-    this.cache.set('exercises', JSON.stringify(exercises))
+    this.cache.set(`@focvs:${muscleId}`, JSON.stringify(exercises))
 
     return exercises
   }
