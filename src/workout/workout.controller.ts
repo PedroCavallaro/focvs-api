@@ -1,81 +1,75 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
-import { WorkoutService } from './workout.service'
-import { CreateWorkoutDto } from './dto/create-workout.dto'
-import { UpdateWorkouDto } from './dto/update-workout.dto'
-import { PaginatedWorkoutDTO } from './dto'
-import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
-import { DeleteWorkoutDTO } from './dto/delete-workout.dto'
-import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query
+} from '@nestjs/common';
+import { WorkoutService } from './workout.service';
+import { CreateWorkoutDto } from './dto/create-workout.dto';
+import { UpdateWorkouDto } from './dto/update-workout.dto';
+import { PaginatedWorkoutDTO } from './dto';
+import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload';
+import { DeleteWorkoutDTO } from './dto/delete-workout.dto';
+import { Public, AuthUser } from '@pedrocavallaro/focvs-utils';
 
 @Controller('workout')
 export class WorkoutController {
   constructor(private readonly service: WorkoutService) {}
 
   @Post('new')
-  @Public()
-  async createWorkout(@Body() workoutDto: CreateWorkoutDto) {
-    const workout = await this.service.createWorkout(workoutDto)
+  async createWorkout(
+    @AuthUser() user: JwtPayloadDTO,
+    @Body() workoutDto: CreateWorkoutDto
+  ) {
+    const workout = await this.service.createWorkout(user.id, workoutDto);
 
-    return workout
+    return workout;
   }
 
-  // @Post('new/performed')
-  // async savePerformedWorkout(
-  //   @Body() performedWorkoutDto: PerformedWorkoutDto,
-  //   @AuthUser() user: JwtPayloadDTO
-  // ) {
-  //   const performedWorkout = await this.service.savePerformed(
-  //     user.id,
-  //     performedWorkoutDto
-  //   );
+  @Get()
+  async getUserWorkouts(@AuthUser() user: JwtPayloadDTO) {
+    const userWorkout = await this.service.getUserWorkouts(user.id);
 
-  //   return performedWorkout;
-  // }
-
-  @Get('user/:id')
-  @Public()
-  async getUserWorkouts(@Param('id') id: string) {
-    const userWorkout = await this.service.getUserWorkouts(id)
-
-    return userWorkout
+    return userWorkout;
   }
 
   @Get(':workoutId')
   async getWorkout(@Param('workoutId') workoutId: string) {
-    const workout = await this.service.getWorkout(workoutId)
+    const workout = await this.service.getWorkout(workoutId);
 
-    return workout
-  }
-
-  @Get('performed/:id')
-  @Public()
-  async listPerformedWorkouts(@Param('id') id: string) {
-    // return await this.service.listPerformedWorkouts(id);
+    return workout;
   }
 
   @Get()
   @Public()
   async listAll() {
-    return await this.service.listAll()
+    return await this.service.listAll();
   }
 
   @Get('search/paginate')
   @Public()
   async searchPaginated(@Query() q: PaginatedWorkoutDTO) {
-    return await this.service.searchPaginated(q)
+    return await this.service.searchPaginated(q);
   }
 
   @Put()
   async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
-    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto)
+    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto);
 
-    return updatedWorkout
+    return updatedWorkout;
   }
 
   @Delete()
   @Public()
-  async deleteUserWorkouts(@AuthUser() user: JwtPayloadDTO, { workoutId }: DeleteWorkoutDTO) {
-    return await this.service.deleteWorkout(user.id, workoutId)
+  async deleteUserWorkouts(
+    @AuthUser() user: JwtPayloadDTO,
+    { workoutId }: DeleteWorkoutDTO
+  ) {
+    return await this.service.deleteWorkout(user.id, workoutId);
   }
   @Delete('performed')
   @Public()
