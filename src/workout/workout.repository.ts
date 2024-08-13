@@ -130,14 +130,17 @@ export class WorkoutRepository {
       PrismaService.handleError(error);
     }
   }
-  async saveWorkout(workoutDto: CreateWorkoutDto): Promise<Workout> {
+  async saveWorkout(
+    userId: string,
+    workoutDto: CreateWorkoutDto
+  ): Promise<Workout> {
     try {
       const workout = await this.prisma.workout.create({
         data: {
           name: workoutDto.name,
           day: workoutDto.day,
           public: workoutDto.public,
-          userId: workoutDto.userId
+          userId: userId
         }
       });
 

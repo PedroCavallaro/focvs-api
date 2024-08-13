@@ -2,9 +2,6 @@ import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreateWorkoutDto {
   @IsNotEmpty()
-  userId: string;
-
-  @IsNotEmpty()
   name: string;
 
   @IsNotEmpty()

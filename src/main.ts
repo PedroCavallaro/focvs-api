@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { env } from './shared/env';
 
 async function bootstrap() {
@@ -9,10 +9,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
-    origin: true,
-    credentials: true
-  });
+    origin: true
+  })
 
-  await app.listen(env.app.port ?? 3000);
+  await app
+    .listen(env.app.port ?? 3000)
+    .then(() => Logger.log(`App running at port ${env.app.port ?? 3000}`));
 }
 bootstrap();
