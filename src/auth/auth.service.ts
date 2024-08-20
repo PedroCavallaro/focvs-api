@@ -1,8 +1,8 @@
-import { Injectable, HttpStatus } from '@nestjs/common'
-import { JwtService, AppError } from '@pedrocavallaro/focvs-utils'
-import { MailService } from 'src/jobs/mail/mail.service'
-import { CacheService } from 'src/shared/cache/cache.service'
-import { AuthRepository } from './auth.repository'
+import { Injectable, HttpStatus } from '@nestjs/common';
+import { JwtService, AppError } from '@pedrocavallaro/focvs-utils';
+import { MailService } from 'src/jobs/mail/mail.service';
+import { CacheService } from 'src/shared/cache/cache.service';
+import { AuthRepository } from './auth.repository';
 import {
   CreateAccountDto,
   SiginDto,
@@ -11,10 +11,10 @@ import {
   RecoverPasswordResponse,
   JwtPayloadDTO,
   NewPasswordDto
-} from './dtos'
-import { RecoverPasswordStatus } from './enums/recover-password.status'
-import { PasswordService } from './password/password.service'
-import { CachedCodeObject } from './types/cached-code-object.type'
+} from './dtos';
+import { RecoverPasswordStatus } from './enums/recover-password.status';
+import { PasswordService } from './password/password.service';
+import { CachedCodeObject } from './types/cached-code-object.type';
 
 @Injectable()
 export class AuthService {
@@ -27,106 +27,128 @@ export class AuthService {
   ) {}
 
   async createUser(createAccountDTO: CreateAccountDto) {
-    const isAlreadyRegistered = await this.repo.searchAccount(createAccountDTO.email)
-    if (isAlreadyRegistered) throw new AppError('Email já ccadastrado', HttpStatus.CONFLICT)
+    const isAlreadyRegistered = await this.repo.searchAccount(
+      createAccountDTO.email
+    );
+    if (isAlreadyRegistered)
+      throw new AppError('Email já ccadastrado', HttpStatus.CONFLICT);
 
-    const hashedPass = await this.passwordService.generateHash(createAccountDTO.password)
+    const hashedPass = await this.passwordService.generateHash(
+      createAccountDTO.password
+    );
 
-    createAccountDTO.password = hashedPass
+    createAccountDTO.password = hashedPass;
 
-    const account = await this.repo.createAccount(createAccountDTO)
+    const account = await this.repo.createAccount(createAccountDTO);
 
     const token = this.jwtService.signToken(
       account.id,
       account.email,
       account.name,
       account.imageUrl
-    )
+    );
 
-    return token
+    return token;
   }
 
   async signIn(signInDTO: SiginDto) {
-    const account = await this.repo.searchAccount(signInDTO.email)
+    const account = await this.repo.searchAccount(signInDTO.email);
 
-    if (!account) throw new AppError('Conta não registrada', HttpStatus.NOT_FOUND)
+    if (!account)
+      throw new AppError('Conta não registrada', HttpStatus.NOT_FOUND);
 
     const isPasswordMatch = await this.passwordService.comparePassword(
       signInDTO.password,
       account.password
-    )
+    );
 
-    if (!isPasswordMatch) throw new AppError('Senha incorreta', HttpStatus.NOT_FOUND)
+    if (!isPasswordMatch)
+      throw new AppError('Senha incorreta', HttpStatus.NOT_FOUND);
 
     const token = this.jwtService.signToken(
       account.id,
       account.email,
       account.name,
       account.imageUrl
-    )
-    return token
+    );
+    return token;
   }
 
   async generateRecoverPasswordToken(recoverDto: GetRecoverPasswordTokenDto) {
-    const account = await this.repo.finAccountByEmail(recoverDto.email)
-    if (!account) throw new AppError('Conta não encontrada', HttpStatus.NOT_FOUND)
+    const account = await this.repo.finAccountByEmail(recoverDto.email);
+    if (!account)
+      throw new AppError('Conta não encontrada', HttpStatus.NOT_FOUND);
 
-    const jwt = this.jwtService.signToken(account.id, account.email, '', '')
-    const token = this.generateOneTimeToken()
+    const jwt = this.jwtService.signToken(account.id, account.email, '', '');
+    const token = this.generateOneTimeToken();
     const cachedCodeObject: CachedCodeObject = {
       code: token,
       status: RecoverPasswordStatus.PENDING
-    }
+    };
 
     this.mailService.sendMail(
       recoverDto.email,
       'Recuperação de senha',
       `Seu token de recuperação de senha é: ${token}`
-    )
+    );
 
-    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300)
+    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300);
 
-    return { token: jwt }
+    return { token: jwt };
   }
 
-  async validateRecoverToken(jwt: string, recoverPasswordCodeDto: RecoverPasswordCodeDto) {
-    const cachedCodeObject: CachedCodeObject = await this.getCachedCodeObject(jwt)
+  async validateRecoverToken(
+    jwt: string,
+    recoverPasswordCodeDto: RecoverPasswordCodeDto
+  ) {
+    const cachedCodeObject: CachedCodeObject = await this.getCachedCodeObject(
+      jwt
+    );
 
     if (Number(cachedCodeObject.code) !== recoverPasswordCodeDto.code)
-      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED)
+      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
-    cachedCodeObject.status = RecoverPasswordStatus.VALID
+    cachedCodeObject.status = RecoverPasswordStatus.VALID;
 
-    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300)
+    await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300);
 
-    return new RecoverPasswordResponse(RecoverPasswordStatus.VALID)
+    return new RecoverPasswordResponse(RecoverPasswordStatus.VALID);
   }
 
-  async changePassword(user: JwtPayloadDTO, jwt: string, newPasswordDto: NewPasswordDto) {
-    const cachedCodeObject: CachedCodeObject = await this.getCachedCodeObject(jwt)
+  async changePassword(
+    user: JwtPayloadDTO,
+    jwt: string,
+    newPasswordDto: NewPasswordDto
+  ) {
+    const cachedCodeObject: CachedCodeObject = await this.getCachedCodeObject(
+      jwt
+    );
 
     if (cachedCodeObject.status !== RecoverPasswordStatus.VALID)
-      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED)
+      throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED);
 
-    const hashedPass = await this.passwordService.generateHash(newPasswordDto.password)
-    await this.repo.updatePassword(user.id, hashedPass)
-    await this.cache.del(jwt)
+    const hashedPass = await this.passwordService.generateHash(
+      newPasswordDto.password
+    );
+    await this.repo.updatePassword(user.id, hashedPass);
+    await this.cache.del(jwt);
 
-    return new RecoverPasswordResponse(RecoverPasswordStatus.SUCCESS)
+    return new RecoverPasswordResponse(RecoverPasswordStatus.SUCCESS);
   }
 
   private generateOneTimeToken(): string {
-    const min = 10000
-    const max = 99999
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min
+    const min = 10000;
+    const max = 99999;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
-    return randomNumber.toString()
+    return randomNumber.toString();
   }
 
   private async getCachedCodeObject(jwt: string): Promise<CachedCodeObject> {
-    const cachedCodeObject = await this.cache.get(jwt)
-    if (!cachedCodeObject) throw new AppError('Token expirado', HttpStatus.NOT_FOUND)
+    const cachedCodeObject = await this.cache.get(jwt);
+    if (!cachedCodeObject)
+      throw new AppError('Token expirado', HttpStatus.NOT_FOUND);
 
-    return JSON.parse(cachedCodeObject)
+    return JSON.parse(cachedCodeObject);
   }
 }
