@@ -20,7 +20,7 @@ import { Public, AuthUser } from '@pedrocavallaro/focvs-utils';
 export class WorkoutController {
   constructor(private readonly service: WorkoutService) {}
 
-  @Post('new')
+  @Post('')
   async createWorkout(
     @AuthUser() user: JwtPayloadDTO,
     @Body() workoutDto: CreateWorkoutDto
@@ -30,50 +30,47 @@ export class WorkoutController {
     return workout;
   }
 
-  @Get()
-  async getUserWorkouts(@AuthUser() user: JwtPayloadDTO) {
-    const userWorkout = await this.service.getUserWorkouts(user.id);
+  @Get('today')
+  async getWorkoutOfTheDay(@AuthUser() user: JwtPayloadDTO) {
+    const workout = await this.service.getWorkoutOfTheDay(user.id);
 
-    return userWorkout;
-  }
-
-  @Get(':workoutId')
-  async getWorkout(@Param('workoutId') workoutId: string) {
-    const workout = await this.service.getWorkout(workoutId);
-
+    console.log(workout);
     return workout;
   }
 
-  @Get()
-  @Public()
-  async listAll() {
-    return await this.service.listAll();
+  @Get(':workoutId')
+  async getWorkout(
+    @AuthUser() user: JwtPayloadDTO,
+    @Param('workoutId') workoutId: string
+  ) {
+    // const workout = await this.service.getWorkout(workoutId);
+    // return workout;
   }
 
-  @Get('search/paginate')
+  @Get('search')
   @Public()
-  async searchPaginated(@Query() q: PaginatedWorkoutDTO) {
+  async searchPaginated(
+    @AuthUser() user: JwtPayloadDTO,
+    @Query() q: PaginatedWorkoutDTO
+  ) {
     return await this.service.searchPaginated(q);
   }
 
   @Put()
-  async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
+  async updateWorkout(
+    @AuthUser() user: JwtPayloadDTO,
+    @Body() updateWorkoutDto: UpdateWorkouDto
+  ) {
     const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto);
 
     return updatedWorkout;
   }
 
   @Delete()
-  @Public()
   async deleteUserWorkouts(
     @AuthUser() user: JwtPayloadDTO,
     { workoutId }: DeleteWorkoutDTO
   ) {
     return await this.service.deleteWorkout(user.id, workoutId);
-  }
-  @Delete('performed')
-  @Public()
-  delteWorkouts() {
-    // return this.service.deltePermormed();
   }
 }

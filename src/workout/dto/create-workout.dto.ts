@@ -1,30 +1,43 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator'
 
 export class CreateWorkoutDto {
   @IsNotEmpty()
-  name: string;
+  name: string
 
   @IsNotEmpty()
   @IsBoolean()
-  public: boolean;
+  public: boolean
 
   @IsNotEmpty()
-  day: number;
+  day: number
 
   @IsNotEmpty()
-  exercises: Array<PerformedWorkoutItem>;
+  exercises: Array<WorkoutItem>
 }
 
-export type PerformedWorkoutItem = {
-  exerciseId: string;
-  sets: [
-    {
-      set_number: number;
-      reps: number;
-      weight: number;
-      newReps: number;
-      newWeight: number;
-      hasImprovements: boolean;
-    }
-  ];
-};
+export class ExerciseSet {
+  @IsNotEmpty()
+  @IsNumber()
+  set_number: number
+
+  @IsNotEmpty()
+  @IsNumber()
+  reps: number
+
+  @IsNotEmpty()
+  @IsNumber()
+  weight: number
+}
+
+export class WorkoutItem {
+  @IsNotEmpty()
+  @IsNumber()
+  exerciseId: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  workoutId: string
+
+  @IsNotEmpty()
+  sets: ExerciseSet[]
+}

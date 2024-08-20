@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { WorkoutRepository } from './workout.repository';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
-import { PaginatedWorkoutDTO, PrismaWorkoutDTO } from './dto';
-import { parsePagination } from 'src/shared/utils/pagination';
+import { PaginatedWorkoutDTO, PrismaWorkoutDTO, UpdateWorkouDto } from './dto';
+import { parsePagination } from 'src/utils/pagination';
+import {
+  WorkoutItemResponse,
+  WorkoutResponseDTO
+} from './dto/workout-response.dto';
 
 @Injectable()
 export class WorkoutService {
@@ -18,34 +22,17 @@ export class WorkoutService {
 
     return parsePagination(workouts, q, count);
   }
-  // async listPerformedWorkouts(id: string) {
-  //   return await this.mongoRepo.listPerformedWorkouts(id)
-  // }
-  // deltePermormed() {
-  //   return this.mongoRepo.deleteWorkouts()
-  // }
-  // async savePerformed(id: string, performedWorkoutDto: PerformedWorkoutDto) {
-  //   const performedWorkout = await this.mongoRepo.savePerformed(id, performedWorkoutDto)
 
-  //   return performedWorkout
-  // }
+  async getWorkoutOfTheDay(userId: string) {
+    const workout = await this.repo.getWorkoutOfTheDay(userId);
 
-  async updateWorkout(updateWorkoutDto) {
+    return this.parseWorkoutReponse(workout);
+  }
+
+  async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
     const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto);
 
     return updatedWorkout;
-  }
-
-  async getUserWorkouts(id: string) {
-    const workouts = await this.repo.getUserWokouts(id);
-
-    return this.transformeArray(workouts);
-  }
-
-  async getWorkout(workoutId: string) {
-    const workout = await this.repo.getWorkout(workoutId);
-
-    return this.transformeArray([workout]);
   }
 
   async listAll() {
@@ -56,45 +43,50 @@ export class WorkoutService {
     return await this.repo.deleteWorkout(userId, workoutId);
   }
 
-  private transformeArray(array: PrismaWorkoutDTO[]) {
-    return array.map((item) => ({
-      id: item.id,
-      name: item.name,
-      day: item.day,
-      userId: item.userId,
-      exercises: item.workoutItem.reduce(
-        (
-          acc: {
-            name: string;
-            sets: { reps: number; weight: number; set_number: number }[];
-          }[],
-          currentItem
-        ) => {
-          const existingExerciseIndex = acc.findIndex(
-            (exercise) => exercise.name === currentItem.exercise.name
-          );
-          if (existingExerciseIndex !== -1) {
-            acc[existingExerciseIndex].sets.push({
-              set_number: currentItem.set_number,
-              reps: currentItem.reps,
-              weight: currentItem.weight
-            });
-          } else {
-            acc.push({
-              name: currentItem.exercise.name,
-              sets: [
-                {
-                  set_number: currentItem.set_number,
-                  reps: currentItem.reps,
-                  weight: currentItem.weight
-                }
-              ]
-            });
-          }
-          return acc;
-        },
-        []
-      )
-    }));
+  private parseWorkoutReponse(workout: PrismaWorkoutDTO): WorkoutResponseDTO {
+    const exercises: WorkoutResponseDTO['exercises'] = [];
+
+    const buildedExercises: Record<string, number> = {};
+
+    for (const item of workout.workoutItem) {
+      if (buildedExercises?.[item.exercise.id]) {
+        continue;
+      }
+
+      const exercise = {
+        sets: []
+      } as WorkoutItemResponse;
+
+      const relatedItems = workout.workoutItem.filter(
+        (i) => i.exercise.id === item.exercise.id
+      );
+
+      const sets = [];
+
+      relatedItems.map((set) =>
+        sets.push({
+          set_number: set.set_number,
+          reps: set.reps,
+          weight: set.weight
+        })
+      );
+
+      exercises.push({
+        exerciseId: item.exercise.id,
+        gif_url: item.exercise.gif_url,
+        name: item.exercise.name,
+        sets: [...exercise.sets, ...sets]
+      });
+
+      buildedExercises[item.exercise.id] = 1;
+    }
+
+    return {
+      id: workout.id,
+      name: workout.name,
+      day: workout.day,
+      public: workout.public,
+      exercises
+    };
   }
 }

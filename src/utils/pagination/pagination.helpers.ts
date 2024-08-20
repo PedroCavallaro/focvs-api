@@ -12,3 +12,15 @@ export function parsePagination<T>(
     totalPages: Math.ceil(count / (query.limit ?? 10))
   };
 }
+
+export function buildPaginationParams(query?: PaginationQueryDTO): {
+  skip: number;
+  take: number;
+} {
+  const defaultLimit = 10;
+  const defaultPage = 1;
+  return {
+    skip: ((query?.page ?? defaultPage) - 1) * (query?.limit ?? defaultLimit),
+    take: query?.limit ?? defaultLimit
+  };
+}

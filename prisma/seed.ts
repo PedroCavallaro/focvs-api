@@ -11,7 +11,7 @@ async function seed() {
       const userPromise = prisma.user.create({
         data: {
           name: faker.internet.userName(),
-          image_url: 'https://i.pravatar.cc/150?u=' + i
+          image_url: `https://i.pravatar.cc/150?u=${i}`
         }
       })
       userPromises.push(userPromise)
@@ -52,7 +52,7 @@ async function seed() {
       const muscle = prisma.muscle.create({
         data: {
           name: muscles[i],
-          picture_url: 'https://i.pravatar.cc/150?u=' + i
+          picture_url: `https://i.pravatar.cc/150?u=${i}`
         }
       })
       musclePromise.push(muscle)
@@ -62,16 +62,16 @@ async function seed() {
 
     const exercisePromises: Promise<Exercise>[] = []
     const exercise = [
-      `Supino`,
-      `Rosca direta`,
-      `Tríceps pulley`,
-      `Puxada frontal`,
-      `Desenvolvimento`,
-      `Agachamento`,
-      `Leg press`,
-      `Stiff`,
-      `Abdominal`,
-      `Elevação de ombros`
+      'Supino',
+      'Rosca direta',
+      'Tríceps pulley',
+      'Puxada frontal',
+      'Desenvolvimento',
+      'Agachamento',
+      'Leg press',
+      'Stiff',
+      'Abdominal',
+      'Elevação de ombros'
     ]
 
     for (const muscle of musclesSaved) {
@@ -79,7 +79,7 @@ async function seed() {
         data: {
           name: exercise[Math.floor(Math.random() * exercise.length)],
           description: faker.lorem.sentence(),
-          gif_url: 'https://i.pravatar.cc/150?u=' + Math.floor(Math.random() * 10),
+          gif_url: `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 10)}`,
           muscleId: muscle.id
         }
       })

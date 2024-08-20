@@ -5,6 +5,8 @@ class WorkoutInclude implements Prisma.WorkoutInclude {
     select: {
       exercise: {
         select: {
+          id: true;
+          gif_url: true;
           name: true;
         };
       };
