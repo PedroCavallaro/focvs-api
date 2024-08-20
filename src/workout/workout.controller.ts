@@ -30,11 +30,22 @@ export class WorkoutController {
     return workout;
   }
 
+
+  @Get()
+  async getUserWorkouts(
+    @AuthUser() user: JwtPayloadDTO
+  ) {
+    const workouts = await this.service.getUserWorkouts(user.id)
+  
+  
+    return workouts
+  }
+
+
   @Get('today')
   async getWorkoutOfTheDay(@AuthUser() user: JwtPayloadDTO) {
     const workout = await this.service.getWorkoutOfTheDay(user.id);
 
-    console.log(workout);
     return workout;
   }
 
@@ -46,6 +57,8 @@ export class WorkoutController {
     // const workout = await this.service.getWorkout(workoutId);
     // return workout;
   }
+
+
 
   @Get('search')
   @Public()

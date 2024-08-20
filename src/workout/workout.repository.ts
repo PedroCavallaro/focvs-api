@@ -185,7 +185,6 @@ export class WorkoutRepository {
         return workout;
       });
     } catch (error) {
-      console.log(error);
       PrismaService.handleError(error);
     }
   }
@@ -194,7 +193,6 @@ export class WorkoutRepository {
       where: {
         userId
       },
-      include: this.workoutInclude
     });
 
     return workout;

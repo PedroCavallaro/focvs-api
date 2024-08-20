@@ -19,7 +19,6 @@ export class AuthController {
   @Public()
   @Post('login')
   async signIn(@Body() signInDto: SiginDto, @Res() res: Response) {
-    console.log('oi')
     const userToken = await this.service.signIn(signInDto)
 
     return res.status(200).send({ token: userToken })
@@ -28,7 +27,6 @@ export class AuthController {
   @Public()
   @Post('register')
   async createUser(@Body() createAccountDto: CreateAccountDto, @Res() res: Response) {
-    console.log('oioioioi')
     const userToken = await this.service.createUser(createAccountDto)
 
     return res.status(200).send({ token: userToken })

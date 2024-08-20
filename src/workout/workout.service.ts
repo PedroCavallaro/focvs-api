@@ -17,6 +17,14 @@ export class WorkoutService {
 
     return workout;
   }
+
+  async getUserWorkouts(userId: string) {
+    const workout = await this.repo.getUserWokouts(userId)
+
+    return workout
+  }
+
+
   async searchPaginated(q: PaginatedWorkoutDTO) {
     const [workouts, count] = await this.repo.searchPaginated(q);
 
@@ -48,7 +56,22 @@ export class WorkoutService {
 
     const buildedExercises: Record<string, number> = {};
 
-    for (const item of workout.workoutItem) {
+    
+    if(!workout) {
+       return {} as WorkoutResponseDTO
+    }
+
+    if(!workout?.workoutItem) {
+        return {
+          id: workout.id,
+          name: workout.name,
+          day: workout.day,
+          public: workout.public,
+          exercises: []
+      }
+    }
+
+    for (const item of workout?.workoutItem) {
       if (buildedExercises?.[item.exercise.id]) {
         continue;
       }

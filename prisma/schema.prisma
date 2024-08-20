@@ -34,11 +34,12 @@ model User {
 }
 
 model Workout {
-  id     String  @id @default(uuid())
-  name   String  @db.VarChar(255)
-  day    Int
-  public Boolean
-  userId String
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(255)
+  day         Int
+  picture_url String?
+  public      Boolean
+  userId      String
 
   user        User          @relation(fields: [userId], references: [id])
   workoutItem WorkoutItem[]
