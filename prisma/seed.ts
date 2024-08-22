@@ -88,8 +88,6 @@ async function seed() {
 
     const exercisesSaved: Exercise[] = await Promise.all(exercisePromises)
 
-    console.log(exercisesSaved)
-
     const workoutsPromise: Promise<Workout>[] = []
 
     for (let i = 0; i < users.length; i++) {
@@ -99,13 +97,13 @@ async function seed() {
             name: `Treino do dia ${i + 1}`,
             day: i,
             public: true,
+            picture_url: `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 10)}`,
             userId: users[i].id
           }
         })
       )
     }
     const workouts = await Promise.all(workoutsPromise)
-    console.log(workouts)
     const workoutItemPromises: Promise<WorkoutItem>[] = []
 
     for (const workout of workouts) {

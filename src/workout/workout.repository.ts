@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/shared/db/prisma.service';
-import { CreateWorkoutDto } from './dto/create-workout.dto';
-import { UpdateWorkouDto } from './dto/update-workout.dto';
-import { Prisma, Workout, WorkoutItem } from '@prisma/client';
-import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto';
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from 'src/shared/db/prisma.service'
+import { CreateWorkoutDto } from './dto/create-workout.dto'
+import { UpdateWorkouDto } from './dto/update-workout.dto'
+import { Prisma, Workout, WorkoutItem } from '@prisma/client'
+import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto'
 
 @Injectable()
 export class WorkoutRepository {
@@ -25,7 +25,7 @@ export class WorkoutRepository {
         set_number: 'asc'
       }
     }
-  } satisfies Prisma.WorkoutInclude;
+  } satisfies Prisma.WorkoutInclude
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -34,7 +34,7 @@ export class WorkoutRepository {
       const params = {
         skip: (Number(q.page) - 1) * Number(q.limit),
         take: Number(q.limit)
-      };
+      }
 
       const cond = {
         NOT: {
@@ -54,7 +54,7 @@ export class WorkoutRepository {
             }
           }
         ]
-      } satisfies Prisma.WorkoutWhereInput;
+      } satisfies Prisma.WorkoutWhereInput
 
       return await this.prisma.$transaction([
         this.prisma.workout.findMany({
@@ -76,27 +76,24 @@ export class WorkoutRepository {
             ...cond
           }
         })
-      ]);
+      ])
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
-  async getWorkoutOfTheDay(userId: string) {
+  async get(where?: Prisma.WorkoutWhereInput) {
     try {
       const workout = await this.prisma.workout.findFirst({
-        where: {
-          userId,
-          day: new Date().getDay()
-        },
+        where,
         include: {
           ...this.workoutInclude
         }
-      });
+      })
 
-      return workout;
+      return workout
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -110,10 +107,10 @@ export class WorkoutRepository {
           day: updateWorkoutDto.day,
           name: updateWorkoutDto.name
         }
-      });
-      return update;
+      })
+      return update
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async updateWorkoutSets(updateWorkouDto: UpdateWorkouDto) {
@@ -129,10 +126,10 @@ export class WorkoutRepository {
             weight: set.weight,
             workoutId: set.workoutId
           }
-        });
+        })
       }
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -145,16 +142,13 @@ export class WorkoutRepository {
             userId
           }
         }
-      });
+      })
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
-  async saveWorkout(
-    userId: string,
-    workoutDto: CreateWorkoutDto
-  ): Promise<Workout> {
+  async saveWorkout(userId: string, workoutDto: CreateWorkoutDto): Promise<Workout> {
     try {
       return await this.prisma.$transaction(async () => {
         const workout = await this.prisma.workout.create({
@@ -164,9 +158,9 @@ export class WorkoutRepository {
             public: workoutDto.public,
             userId: userId
           }
-        });
+        })
 
-        const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = [];
+        const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
 
         for (const { sets, exerciseId } of workoutDto.exercises) {
           for (const { ...s } of sets) {
@@ -174,18 +168,18 @@ export class WorkoutRepository {
               ...s,
               exerciseId,
               workoutId: workout.id
-            });
+            })
           }
         }
 
         await this.prisma.workoutItem.createMany({
           data: workoutItemsToCreate
-        });
+        })
 
-        return workout;
-      });
+        return workout
+      })
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async getUserWokouts(userId: string) {
@@ -193,9 +187,15 @@ export class WorkoutRepository {
       where: {
         userId
       },
-    });
-
-    return workout;
+      include: {
+        workoutItem: {
+          select: {
+            exerciseId: true
+          }
+        }
+      }
+    })
+    return workout
   }
 
   async getWorkout(workoutId: string) {
@@ -205,25 +205,25 @@ export class WorkoutRepository {
           AND: [{ id: workoutId }, { public: true }]
         },
         include: this.workoutInclude
-      });
+      })
 
-      return workout;
+      return workout
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
   async listAll() {
     try {
-      const workout = await this.prisma.workout.findMany();
-      const sets = await this.prisma.workoutItem.findMany();
+      const workout = await this.prisma.workout.findMany()
+      const sets = await this.prisma.workoutItem.findMany()
 
       return {
         workout,
         sets
-      };
+      }
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 }
