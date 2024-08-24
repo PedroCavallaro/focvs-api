@@ -4,7 +4,6 @@ import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { PaginatedWorkoutDTO } from './dto'
 import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
-import { DeleteWorkoutDTO } from './dto/delete-workout.dto'
 import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
 
 @Controller('workout')
@@ -41,8 +40,8 @@ export class WorkoutController {
 
   @Get(':workoutId')
   async getWorkout(@AuthUser() user: JwtPayloadDTO, @Param('workoutId') workoutId: string) {
-    // const workout = await this.service.getWorkout(workoutId);
-    // return workout;
+    const workout = await this.service.getFullWorkoutById(workoutId)
+    return workout
   }
 
   @Get('search')
@@ -58,8 +57,8 @@ export class WorkoutController {
     return updatedWorkout
   }
 
-  @Delete()
-  async deleteUserWorkouts(@AuthUser() user: JwtPayloadDTO, { workoutId }: DeleteWorkoutDTO) {
+  @Delete(':id')
+  async deleteUserWorkout(@AuthUser() user: JwtPayloadDTO, @Param('id') workoutId: string) {
     return await this.service.deleteWorkout(user.id, workoutId)
   }
 }

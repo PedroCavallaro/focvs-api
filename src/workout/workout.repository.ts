@@ -8,6 +8,12 @@ import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto'
 @Injectable()
 export class WorkoutRepository {
   private readonly workoutInclude = {
+    user: {
+      select: {
+        name: true,
+        image_url: true
+      }
+    },
     workoutItem: {
       select: {
         exercise: {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { WorkoutRepository } from './workout.repository'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { PaginatedWorkoutDTO, PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
@@ -9,6 +9,7 @@ import {
   WorkoutResponseDTO
 } from './dto/workout-response.dto'
 import { Workout } from '@prisma/client'
+import { AppError } from '@pedrocavallaro/focvs-utils'
 
 @Injectable()
 export class WorkoutService {
@@ -52,11 +53,23 @@ export class WorkoutService {
     return updatedWorkout
   }
 
-  async listAll() {
-    return await this.repo.listAll()
+  async getFullWorkoutById(workoutId: string) {
+    const workout = await this.repo.get({ id: workoutId })
+
+    return this.parseWorkoutReponse(workout)
   }
 
   async deleteWorkout(userId: string, workoutId: string) {
+    const workout = await this.repo.get({ userId, id: workoutId })
+
+    if (!workout) {
+      throw new AppError('Workout not found', HttpStatus.NOT_FOUND)
+    }
+
+    if (workout.userId !== userId) {
+      throw new AppError('User does not have permission', HttpStatus.UNAUTHORIZED)
+    }
+
     return await this.repo.deleteWorkout(userId, workoutId)
   }
 
@@ -94,6 +107,7 @@ export class WorkoutService {
         name: workout.name,
         day: workout.day,
         public: workout.public,
+        user: workout.user,
         exercises: []
       }
     }
@@ -134,6 +148,7 @@ export class WorkoutService {
       name: workout.name,
       day: workout.day,
       public: workout.public,
+      user: workout.user,
       exercises
     }
   }

@@ -5,6 +5,10 @@ export interface WorkoutResponseDTO {
   name: string
   public: boolean
   day: number
+  user: {
+    name: string
+    image_url: string
+  }
   exercises: Array<WorkoutItemResponse>
 }
 
