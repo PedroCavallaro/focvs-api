@@ -1,19 +1,25 @@
-import { WorkoutItem } from '@prisma/client';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { WorkoutItem } from '@prisma/client'
+import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator'
 
 export class UpdateWorkouDto {
   @IsNotEmpty()
-  id: string;
+  id: string
 
   @IsNotEmpty()
-  userId: string;
-
   @IsOptional()
-  name: string;
-
-  @IsOptional()
-  day: number;
+  name?: string
 
   @IsNotEmpty()
-  sets: Array<WorkoutItem>;
+  @IsOptional()
+  picture_url?: string
+
+  @IsOptional()
+  @IsBoolean()
+  public?: boolean
+
+  @IsOptional()
+  day?: number
+
+  @IsOptional()
+  exercises?: Array<WorkoutItem>
 }

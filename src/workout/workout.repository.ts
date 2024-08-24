@@ -3,7 +3,7 @@ import { PrismaService } from 'src/shared/db/prisma.service'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { Prisma, Workout, WorkoutItem } from '@prisma/client'
-import { PaginatedWorkoutDTO } from './dto/paginated-workouts.dto'
+import { buildPaginationParams, PaginationQueryDTO } from 'src/utils/pagination'
 
 @Injectable()
 export class WorkoutRepository {
@@ -16,6 +16,7 @@ export class WorkoutRepository {
     },
     workoutItem: {
       select: {
+        exerciseId: true,
         exercise: {
           select: {
             id: true,
@@ -35,13 +36,8 @@ export class WorkoutRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async searchPaginated(q: PaginatedWorkoutDTO) {
+  async searchPaginated(q: PaginationQueryDTO) {
     try {
-      const params = {
-        skip: (Number(q.page) - 1) * Number(q.limit),
-        take: Number(q.limit)
-      }
-
       const cond = {
         NOT: {
           public: false
@@ -49,13 +45,13 @@ export class WorkoutRepository {
         OR: [
           {
             name: {
-              contains: q.workoutName
+              contains: q.q
             }
           },
           {
             user: {
               name: {
-                contains: q.username
+                contains: q.q
               }
             }
           }
@@ -68,14 +64,9 @@ export class WorkoutRepository {
             ...cond
           },
           include: {
-            user: {
-              select: {
-                name: true,
-                image_url: true
-              }
-            }
+            ...this.workoutInclude
           },
-          ...params
+          ...buildPaginationParams(q)
         }),
         this.prisma.workout.count({
           where: {
@@ -111,7 +102,9 @@ export class WorkoutRepository {
         },
         data: {
           day: updateWorkoutDto.day,
-          name: updateWorkoutDto.name
+          name: updateWorkoutDto.name,
+          public: updateWorkoutDto.public,
+          picture_url: updateWorkoutDto.picture_url
         }
       })
       return update
@@ -121,7 +114,7 @@ export class WorkoutRepository {
   }
   async updateWorkoutSets(updateWorkouDto: UpdateWorkouDto) {
     try {
-      for (const set of updateWorkouDto.sets) {
+      for (const set of updateWorkouDto.exercises) {
         await this.prisma.workoutItem.update({
           where: {
             id: set.id
@@ -194,11 +187,7 @@ export class WorkoutRepository {
         userId
       },
       include: {
-        workoutItem: {
-          select: {
-            exerciseId: true
-          }
-        }
+        ...this.workoutInclude
       }
     })
     return workout
@@ -214,20 +203,6 @@ export class WorkoutRepository {
       })
 
       return workout
-    } catch (error) {
-      PrismaService.handleError(error)
-    }
-  }
-
-  async listAll() {
-    try {
-      const workout = await this.prisma.workout.findMany()
-      const sets = await this.prisma.workoutItem.findMany()
-
-      return {
-        workout,
-        sets
-      }
     } catch (error) {
       PrismaService.handleError(error)
     }

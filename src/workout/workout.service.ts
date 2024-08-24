@@ -1,14 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { WorkoutRepository } from './workout.repository'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
-import { PaginatedWorkoutDTO, PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
-import { parsePagination } from 'src/utils/pagination'
-import {
-  WorkoutDetailsDTO,
-  WorkoutItemResponse,
-  WorkoutResponseDTO
-} from './dto/workout-response.dto'
-import { Workout } from '@prisma/client'
+import { PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
+import { PaginationQueryDTO, parsePagination } from 'src/utils/pagination'
+import { WorkoutItemResponse, WorkoutResponseDTO } from './dto/workout-response.dto'
 import { AppError } from '@pedrocavallaro/focvs-utils'
 
 @Injectable()
@@ -24,15 +19,17 @@ export class WorkoutService {
   async getUserWorkouts(userId: string) {
     const workouts = await this.repo.getUserWokouts(userId)
 
-    const res = workouts.map((workout) => this.getExerciseAmount(workout))
+    const res = workouts.map((workout) => this.parseWorkoutReponse(workout))
 
     return res
   }
 
-  async searchPaginated(q: PaginatedWorkoutDTO) {
+  async searchPaginated(q: PaginationQueryDTO) {
     const [workouts, count] = await this.repo.searchPaginated(q)
 
-    return parsePagination(workouts, q, count)
+    const res = workouts.map((workout) => this.parseWorkoutReponse(workout))
+
+    return parsePagination(res, q, count)
   }
 
   async getWorkoutOfTheDay(userId: string) {
@@ -47,14 +44,24 @@ export class WorkoutService {
     return this.parseWorkoutReponse(workout)
   }
 
-  async updateWorkout(updateWorkoutDto: UpdateWorkouDto) {
+  async updateWorkout(userId: string, updateWorkoutDto: UpdateWorkouDto) {
+    const workout = await this.repo.get({ userId, id: updateWorkoutDto.id })
+
+    if (!workout) {
+      throw new AppError('Unauthorized', HttpStatus.FORBIDDEN)
+    }
+
     const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto)
 
     return updatedWorkout
   }
 
-  async getFullWorkoutById(workoutId: string) {
+  async getFullWorkoutById(workoutId: string, userId: string) {
     const workout = await this.repo.get({ id: workoutId })
+
+    if (!workout.public && userId !== workout.userId) {
+      throw new AppError('Workout not found', HttpStatus.NOT_FOUND)
+    }
 
     return this.parseWorkoutReponse(workout)
   }
@@ -73,25 +80,6 @@ export class WorkoutService {
     return await this.repo.deleteWorkout(userId, workoutId)
   }
 
-  private getExerciseAmount(
-    workout: Workout & { workoutItem: Array<{ exerciseId: string }> }
-  ): WorkoutDetailsDTO {
-    if (!workout?.workoutItem) return { ...workout, exerciseAmount: 0 }
-
-    const exerciseIds: Record<string, boolean> = {}
-    let count = 0
-
-    for (const { exerciseId } of workout.workoutItem) {
-      if (!exerciseIds[exerciseId]) {
-        exerciseIds[exerciseId] = true
-
-        count++
-      }
-    }
-
-    return { ...workout, exerciseAmount: count }
-  }
-
   private parseWorkoutReponse(workout: PrismaWorkoutDTO): WorkoutResponseDTO {
     const exercises: WorkoutResponseDTO['exercises'] = []
 
@@ -103,19 +91,20 @@ export class WorkoutService {
 
     if (!workout?.workoutItem) {
       return {
-        id: workout.id,
-        name: workout.name,
-        day: workout.day,
-        public: workout.public,
-        user: workout.user,
+        ...workout,
+        exerciseAmount: 0,
         exercises: []
       }
     }
+
+    let exerciseAmount = 0
 
     for (const item of workout.workoutItem) {
       if (buildedExercises[item.exercise.id]) {
         continue
       }
+
+      exerciseAmount++
 
       const exercise = {
         sets: []
@@ -144,12 +133,9 @@ export class WorkoutService {
     }
 
     return {
-      id: workout.id,
-      name: workout.name,
-      day: workout.day,
-      public: workout.public,
-      user: workout.user,
-      exercises
+      ...workout,
+      exercises,
+      exerciseAmount
     }
   }
 }

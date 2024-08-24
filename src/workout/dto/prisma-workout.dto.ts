@@ -9,6 +9,7 @@ class WorkoutInclude implements Prisma.WorkoutInclude {
   }
   workoutItem: {
     select: {
+      exerciseId: true
       exercise: {
         select: {
           id: true

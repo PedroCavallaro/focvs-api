@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv'
 
 const getEnv = () => ({
   app: {
@@ -11,7 +11,7 @@ const getEnv = () => ({
   },
   jwt: {
     secret: process.env.JWT_SECRET,
-    expiresIn: parseInt(process.env.JWT_EXPIRES_IN ?? '1800')
+    expiresIn: Number.parseInt(process.env.JWT_EXPIRES_IN ?? '1800')
   },
   db: {
     mongo: process.env.MONGO_URL,
@@ -25,14 +25,10 @@ const getEnv = () => ({
   },
 
   isProduction(): boolean {
-    return (
-      env.app.env !== 'local' &&
-      env.app.env !== 'development' &&
-      env.app.env !== 'homolog'
-    );
+    return env.app.env !== 'local' && env.app.env !== 'development' && env.app.env !== 'homolog'
   }
-});
+})
 
-dotenv.config();
+dotenv.config()
 
-export const env = getEnv();
+export const env = getEnv()

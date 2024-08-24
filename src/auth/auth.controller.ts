@@ -29,7 +29,7 @@ export class AuthController {
   async createUser(@Body() createAccountDto: CreateAccountDto, @Res() res: Response) {
     const userToken = await this.service.createUser(createAccountDto)
 
-    return res.status(200).send({ token: userToken })
+    return res.status(201).send({ token: userToken })
   }
 
   @Public()

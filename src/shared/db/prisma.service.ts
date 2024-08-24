@@ -2,7 +2,6 @@ import { Global, HttpStatus, Injectable, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DefaultArgs, DynamicQueryExtensionArgs } from '@prisma/client/runtime/library'
 import { PrismaError } from 'prisma-error-enum'
-import { LoggerService } from '../log/Logger.service'
 import { AppError } from '@pedrocavallaro/focvs-utils'
 
 @Global()
@@ -73,12 +72,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
             HttpStatus.PRECONDITION_FAILED
           )
       }
-      LoggerService.sendToQueue({
-        message: `Error on prisma, ${err.message}`,
-        requestorId: '1',
-        timestamp: new Date(),
-        operation: 'A'
-      })
     }
 
     throw err

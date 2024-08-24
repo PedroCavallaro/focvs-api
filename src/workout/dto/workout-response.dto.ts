@@ -5,6 +5,7 @@ export interface WorkoutResponseDTO {
   name: string
   public: boolean
   day: number
+  exerciseAmount: number
   user: {
     name: string
     image_url: string

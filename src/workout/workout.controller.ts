@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { WorkoutService } from './workout.service'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { UpdateWorkouDto } from './dto/update-workout.dto'
-import { PaginatedWorkoutDTO } from './dto'
 import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
-import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
+import { AuthUser } from '@pedrocavallaro/focvs-utils'
+import { PaginationQueryDTO } from 'src/utils/pagination'
 
 @Controller('workout')
 export class WorkoutController {
@@ -31,28 +31,20 @@ export class WorkoutController {
     return workout
   }
 
-  @Get('user/:id')
-  async getSingleUserWorkout(@AuthUser() user: JwtPayloadDTO, @Param('id') id: string) {
-    const workouts = await this.service.getSingleUserWorkout(user.id, id)
-
-    return workouts
+  @Get('search')
+  async searchPaginated(@Query() query: PaginationQueryDTO) {
+    return await this.service.searchPaginated(query)
   }
 
   @Get(':workoutId')
   async getWorkout(@AuthUser() user: JwtPayloadDTO, @Param('workoutId') workoutId: string) {
-    const workout = await this.service.getFullWorkoutById(workoutId)
+    const workout = await this.service.getFullWorkoutById(workoutId, user.id)
     return workout
   }
 
-  @Get('search')
-  @Public()
-  async searchPaginated(@AuthUser() user: JwtPayloadDTO, @Query() q: PaginatedWorkoutDTO) {
-    return await this.service.searchPaginated(q)
-  }
-
-  @Put()
+  @Patch()
   async updateWorkout(@AuthUser() user: JwtPayloadDTO, @Body() updateWorkoutDto: UpdateWorkouDto) {
-    const updatedWorkout = await this.service.updateWorkout(updateWorkoutDto)
+    const updatedWorkout = await this.service.updateWorkout(user.id, updateWorkoutDto)
 
     return updatedWorkout
   }

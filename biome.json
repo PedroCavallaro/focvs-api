@@ -29,6 +29,9 @@
       "correctness": {
         "noUnusedImports": {
           "level": "warn"
+        },
+        "noUnusedVariables": {
+          "level": "warn"
         }
       },
       "recommended": true

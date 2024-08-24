@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dtos/create-account';
-import { PrismaService } from 'src/shared/db/prisma.service';
+import { Injectable } from '@nestjs/common'
+import { CreateAccountDto } from './dtos/create-account'
+import { PrismaService } from 'src/shared/db/prisma.service'
 
 @Injectable()
 export class AuthRepository {
@@ -13,7 +13,7 @@ export class AuthRepository {
           name: createAccountDTO.name,
           image_url: createAccountDTO.imageurl ?? ''
         }
-      });
+      })
 
       const account = await this.prisma.account.create({
         data: {
@@ -21,17 +21,17 @@ export class AuthRepository {
           password: createAccountDTO.password,
           userId: user.id
         }
-      });
+      })
 
       const res = {
         id: user.id,
         name: account.email,
         email: account.email,
         imageUrl: user.image_url
-      };
-      return res;
+      }
+      return res
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -39,26 +39,26 @@ export class AuthRepository {
     try {
       const account = await this.prisma.account.findUnique({
         where: { email }
-      });
+      })
 
       const user = await this.prisma.user.findUnique({
         where: {
           id: account?.userId ?? ''
         }
-      });
+      })
 
-      if (!user) return null;
+      if (!user) return null
 
       const res = {
         id: user.id,
-        name: account.email,
+        name: user.name,
         email: account.email,
         password: account.password,
         imageUrl: user.image_url
-      };
-      return res;
+      }
+      return res
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
   async finAccountByEmail(email: string) {
@@ -67,11 +67,11 @@ export class AuthRepository {
         where: {
           email
         }
-      });
+      })
 
-      return account;
+      return account
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
@@ -84,16 +84,16 @@ export class AuthRepository {
         data: {
           password
         }
-      });
+      })
     } catch (error) {
-      PrismaService.handleError(error);
+      PrismaService.handleError(error)
     }
   }
 
   async listAll() {
-    return await this.prisma.account.findMany();
+    return await this.prisma.account.findMany()
   }
   async del() {
-    return await this.prisma.account.deleteMany();
+    return await this.prisma.account.deleteMany()
   }
 }
