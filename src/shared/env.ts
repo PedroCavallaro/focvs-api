@@ -7,7 +7,7 @@ const getEnv = () => ({
     name: process.env.APP_NAME,
     description: process.env.APP_DESCRIPTION,
     version: process.env.APP_VERSION,
-    port: process.env.PORT
+    port: Number(process.env.APP_PORT)
   },
   jwt: {
     secret: process.env.JWT_SECRET,
