@@ -5,13 +5,26 @@ import { PasswordService } from 'src/auth/password/password.service'
 import { AuthRepository } from './auth.repository'
 import { PrismaModule } from 'src/shared/db/prisma.module'
 import { CacheModule } from 'src/shared/cache/cache.module'
-import { MailService } from 'src/jobs/mail/mail.service'
 import { FocvsSharedStuffModule, JwtService } from '@pedrocavallaro/focvs-utils'
+import { ClientsModule, Transport } from '@nestjs/microservices'
 
 @Module({
-  imports: [PrismaModule, CacheModule, FocvsSharedStuffModule],
+  imports: [
+    PrismaModule,
+    ClientsModule.register([
+      {
+        name: 'MESSAGING',
+        transport: Transport.TCP,
+        options: {
+          port: 4000
+        }
+      }
+    ]),
+    CacheModule,
+    FocvsSharedStuffModule
+  ],
   controllers: [AuthController],
-  providers: [AuthRepository, JwtService, AuthService, PasswordService, MailService],
+  providers: [AuthRepository, JwtService, AuthService, PasswordService],
   exports: [AuthService]
 })
 export class AuthModule {}
