@@ -1,5 +1,5 @@
 import { Injectable, HttpStatus, Inject } from '@nestjs/common'
-import { JwtService, AppError } from '@pedrocavallaro/focvs-utils'
+import { JwtService, AppError, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { CacheService } from 'src/shared/cache/cache.service'
 import { AuthRepository } from './auth.repository'
 import {
@@ -8,7 +8,6 @@ import {
   GetRecoverPasswordTokenDto,
   RecoverPasswordCodeDto,
   RecoverPasswordResponse,
-  JwtPayloadDTO,
   NewPasswordDto
 } from './dtos'
 import { RecoverPasswordStatus } from './enums/recover-password.status'

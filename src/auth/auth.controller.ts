@@ -1,12 +1,11 @@
 import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common'
-import { Public, AuthUser } from '@pedrocavallaro/focvs-utils'
+import { Public, AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { AuthService } from './auth.service'
 import {
   SiginDto,
   CreateAccountDto,
   GetRecoverPasswordTokenDto,
   RecoverPasswordCodeDto,
-  JwtPayloadDTO,
   NewPasswordDto
 } from './dtos'
 import { Response } from 'express'

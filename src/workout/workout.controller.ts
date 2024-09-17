@@ -2,8 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { WorkoutService } from './workout.service'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { UpdateWorkouDto } from './dto/update-workout.dto'
-import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
-import { AuthUser } from '@pedrocavallaro/focvs-utils'
+import { AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { PaginationQueryDTO } from 'src/utils/pagination'
 
 @Controller('workout')
