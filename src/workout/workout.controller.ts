@@ -1,9 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { WorkoutService } from './workout.service'
-import { CreateWorkoutDto } from './dto/create-workout.dto'
-import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { PaginationQueryDTO } from 'src/utils/pagination'
+import { CreateWorkoutDto, UpdateWorkouDto } from './dto'
 
 @Controller('workout')
 export class WorkoutController {

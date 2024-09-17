@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
-import { ExerciseDto } from './dto/exercise.dto';
-import { MuscleDto } from './dto/muscle.dto';
-import { ExerciseQueryDto } from './dto/get-exercise.dto';
 import { PaginationQueryDTO } from 'src/utils/pagination';
+import { ExerciseQueryDto, ExerciseDto, MuscleDto } from './dto';
 
 @Controller('exercise')
 export class ExerciseController {
