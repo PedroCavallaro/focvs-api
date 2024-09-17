@@ -45,23 +45,15 @@ export class ExerciseService {
     return parsePagination(exercises, query, count)
   }
 
-  // async getExerciseByMuscle(muscle: string) {
-  //   const cachedExercises = await this.cache.get(muscle)
+  async getMuscles(q: string) {
+    const res = await this.repo.getMuscles(q)
+ 
+    const muscles = res.map((m) => ({
+      ...m,
+      exerciseCount: m._count.exercise,
+      _count: undefined
+    }))
 
-  //   if (cachedExercises) return JSON.parse(cachedExercises)
-
-  //   const muscleFound = await this.repo.getMuscleByName(muscle)
-
-  //   if (!muscleFound) throw new AppError('Musculo não encontrado', HttpStatus.NOT_FOUND)
-
-  //   const exercises = await this.repo.getExercisesByMuscle(muscle)
-
-  //   this.cache.set(muscleFound.name, JSON.stringify(exercises))
-
-  //   return exercises
-  // }
-
-  async getMuscles() {
-    return await this.repo.getMuscles()
+    return  muscles
   }
 }

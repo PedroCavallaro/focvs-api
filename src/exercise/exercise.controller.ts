@@ -3,14 +3,15 @@ import { ExerciseService } from './exercise.service';
 import { ExerciseDto } from './dto/exercise.dto';
 import { MuscleDto } from './dto/muscle.dto';
 import { ExerciseQueryDto } from './dto/get-exercise.dto';
+import { PaginationQueryDTO } from 'src/utils/pagination';
 
 @Controller('exercise')
 export class ExerciseController {
   constructor(private readonly service: ExerciseService) {}
 
   @Get('/muscle')
-  async getMuscles() {
-    const muscles = await this.service.getMuscles();
+  async getMuscles(@Query() q: PaginationQueryDTO) {
+    const muscles = await this.service.getMuscles(q.q);
 
     return muscles;
   }

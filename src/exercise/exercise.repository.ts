@@ -124,9 +124,23 @@ export class ExerciseRepository {
     }
   }
 
-  async getMuscles() {
+  async getMuscles(q: string) {
     try {
-      const muscles = await this.prisma.muscle.findMany()
+      const muscles = await this.prisma.muscle.findMany({
+        include: {
+          _count: {
+            select: {
+              exercise: true
+            }
+          }
+        },
+        where: {
+          name: {
+            contains: q
+          }
+        }
+
+      })
 
       return muscles
     } catch (error) {

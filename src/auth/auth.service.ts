@@ -79,12 +79,6 @@ export class AuthService {
       status: RecoverPasswordStatus.PENDING
     }
 
-    // this.mailService.sendMail(
-    //   recoverDto.email,
-    //   'Recuperação de senha',
-    //   `Seu token de recuperação de senha é: ${token}`
-    // )
-
     await this.cache.set(jwt, JSON.stringify(cachedCodeObject), 'EX', 300)
 
     return { token: jwt }
