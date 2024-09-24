@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/shared/db/prisma.service'
-import { ExerciseDto } from './dto/exercise.dto'
-import { MuscleDto } from './dto/muscle.dto'
-import { ExerciseQueryDto } from './dto/get-exercise.dto'
 import { buildPaginationParams } from 'src/utils/pagination'
+import { ExerciseQueryDto, ExerciseDto, MuscleDto } from './dto'
 
 @Injectable()
 export class ExerciseRepository {
@@ -26,7 +24,10 @@ export class ExerciseRepository {
       return await Promise.all([
         this.prisma.exercise.findMany({
           where: {
-            muscleId
+            muscleId,
+            name: {
+              contains: query.q
+            }
           },
           select: {
             id: true,

@@ -1,11 +1,10 @@
-import { ExerciseDto } from './dto/exercise.dto'
 import { ExerciseRepository } from './exercise.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { MuscleDto } from './dto/muscle.dto'
 import { CacheService } from 'src/shared/cache/cache.service'
 import { AppError } from '@pedrocavallaro/focvs-utils'
 import { ExerciseQueryDto } from './dto/get-exercise.dto'
 import { parsePagination } from 'src/utils/pagination'
+import { ExerciseDto, MuscleDto } from './dto'
 
 @Injectable()
 export class ExerciseService {
@@ -42,6 +41,7 @@ export class ExerciseService {
   async getExercises(muscleId: string, query: ExerciseQueryDto) {
     const [exercises, count] = await this.repo.getExercises(muscleId, query)
 
+    console.log(exercises);
     return parsePagination(exercises, query, count)
   }
 
