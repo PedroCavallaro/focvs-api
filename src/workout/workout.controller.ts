@@ -11,7 +11,6 @@ export class WorkoutController {
   @Post('')
   async createWorkout(@AuthUser() user: JwtPayloadDTO, @Body() workoutDto: CreateWorkoutDto) {
     const workout = await this.service.createWorkout(user.id, workoutDto)
-
     return workout
   }
 
@@ -37,6 +36,7 @@ export class WorkoutController {
   @Get(':workoutId')
   async getWorkout(@AuthUser() user: JwtPayloadDTO, @Param('workoutId') workoutId: string) {
     const workout = await this.service.getFullWorkoutById(workoutId, user.id)
+   
     return workout
   }
 

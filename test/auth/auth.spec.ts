@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common'
 import { resetDatabase } from 'test/db/client'
-import { JwtService } from 'src/auth/jwt/jwt.service'
 import { doRequest, getApp } from 'test/app/app.automation'
 import { CreateAccountDto } from 'src/auth/dtos/create-account'
+import { JwtService } from '@pedrocavallaro/focvs-utils'
 
 describe('Auth Controller', () => {
   let app: INestApplication

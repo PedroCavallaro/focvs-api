@@ -1,8 +1,7 @@
 import { TestingModule } from '@nestjs/testing'
 import { IGetApp, getApp } from 'test/app/app.automation'
-import { JwtService } from 'src/auth/jwt/jwt.service'
-import { JwtPayloadDTO } from 'src/auth/dtos/jwt-payload'
 import { RawUser, addRawUser } from './auth.automation'
+import { JwtPayloadDTO, JwtService } from '@pedrocavallaro/focvs-utils'
 
 let payload: JwtPayloadDTO = {
   email: '',

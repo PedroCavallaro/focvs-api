@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/shared/db/prisma.service'
-import { CreateWorkoutDto } from './dto/create-workout.dto'
-import { UpdateWorkouDto } from './dto/update-workout.dto'
 import { Prisma, Workout, WorkoutItem } from '@prisma/client'
 import { buildPaginationParams, PaginationQueryDTO } from 'src/utils/pagination'
+import { UpdateWorkouDto, CreateWorkoutDto } from './dto'
 
 @Injectable()
 export class WorkoutRepository {

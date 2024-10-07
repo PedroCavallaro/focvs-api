@@ -39,9 +39,21 @@ export class ExerciseService {
   }
 
   async getExercises(muscleId: string, query: ExerciseQueryDto) {
+    // const cachedExercises = await this.cache.get(`exercises:${query.page ?? 0}`)
+
+    // if(cachedExercises) {
+    //   const parsedExercises = JSON.parse(cachedExercises)
+      
+    //   return parsePagination(parsedExercises.data, query, parsedExercises.total)
+    // }
+
     const [exercises, count] = await this.repo.getExercises(muscleId, query)
 
-    console.log(exercises);
+    // await this.cache.set(`exercises:${query.page ?? 0}`, JSON.stringify({
+    //   total: count,
+    //   data: JSON.stringify(exercises)
+    // }))
+
     return parsePagination(exercises, query, count)
   }
 

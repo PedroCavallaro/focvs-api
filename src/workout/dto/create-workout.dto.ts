@@ -35,9 +35,5 @@ export class WorkoutItem {
   exerciseId: string
 
   @IsNotEmpty()
-  @IsNumber()
-  workoutId: string
-
-  @IsNotEmpty()
   sets: ExerciseSet[]
 }
