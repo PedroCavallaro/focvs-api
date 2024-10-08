@@ -21,12 +21,13 @@ export class ExerciseRepository {
 
   async getExercises(muscleId: string, query: ExerciseQueryDto) {
     try {
-      return await Promise.all([
+      const res =  await Promise.all([
         this.prisma.exercise.findMany({
           where: {
             muscleId,
             name: {
-              contains: query.q
+              contains: query.q,
+
             }
           },
           select: {
@@ -48,6 +49,9 @@ export class ExerciseRepository {
           }
         })
       ])
+
+
+      return res
     } catch (error) {
       PrismaService.handleError(error)
     }
@@ -137,7 +141,8 @@ export class ExerciseRepository {
         },
         where: {
           name: {
-            contains: q
+            contains: q,
+            mode: "insensitive"
           }
         }
 

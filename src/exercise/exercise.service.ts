@@ -49,6 +49,8 @@ export class ExerciseService {
 
     const [exercises, count] = await this.repo.getExercises(muscleId, query)
 
+    console.log(exercises);
+
     // await this.cache.set(`exercises:${query.page ?? 0}`, JSON.stringify({
     //   total: count,
     //   data: JSON.stringify(exercises)
