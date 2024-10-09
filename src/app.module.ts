@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config'
 import { WorkoutModule } from './workout/workout.module'
 import { ExerciseModule } from './exercise/exercise.module'
 import { PrismaModule } from './shared/db/prisma.module'
-import { ScheduleModule } from '@nestjs/schedule'
 import { RecoverPasswordGuard } from './auth/guards/recover-password.guard'
 import { APP_GUARD, Reflector } from '@nestjs/core'
 import { FocvsSharedStuffModule, JwtService, AuthGuard } from '@pedrocavallaro/focvs-utils'
@@ -13,7 +12,6 @@ import { FocvsSharedStuffModule, JwtService, AuthGuard } from '@pedrocavallaro/f
   imports: [
     FocvsSharedStuffModule,
     ConfigModule.forRoot(),
-    ScheduleModule.forRoot(),
     PrismaModule,
     AuthModule,
     ExerciseModule,

@@ -11,9 +11,9 @@ import {
   NewPasswordDto
 } from './dtos'
 import { RecoverPasswordStatus } from './enums/recover-password.status'
-import { PasswordService } from './password/password.service'
 import { CachedCodeObject } from './types/cached-code-object.type'
 import { ClientProxy } from '@nestjs/microservices'
+import { PasswordService } from './password/password.service'
 
 @Injectable()
 export class AuthService {
