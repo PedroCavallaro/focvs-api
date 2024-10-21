@@ -86,6 +86,7 @@ export class WorkoutRepository {
           ...this.workoutInclude
         }
       })
+      console.log(workout)
 
       return workout
     } catch (error) {

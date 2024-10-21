@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common'
+import { Controller, Post, Body, Res, UseGuards, HttpStatus } from '@nestjs/common'
 import { Public, AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { AuthService } from './auth.service'
 import {
@@ -26,6 +26,7 @@ export class AuthController {
   @Public()
   @Post('register')
   async createUser(@Body() createAccountDto: CreateAccountDto, @Res() res: Response) {
+    console.log('a')
     const userToken = await this.service.createUser(createAccountDto)
 
     return res.status(201).send({ token: userToken })
