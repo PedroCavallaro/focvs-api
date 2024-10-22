@@ -1,58 +1,23 @@
-import { PrismaClient, User, Account, Muscle, Exercise, Workout, WorkoutItem } from '@prisma/client'
+import { PrismaClient, Muscle, Exercise } from '@prisma/client'
 import { faker } from '@faker-js/faker'
 
 async function seed() {
   try {
     const prisma = new PrismaClient()
 
-    const userPromises: Promise<User>[] = []
-
-    for (let i = 0; i < 5; i++) {
-      const userPromise = prisma.user.create({
-        data: {
-          name: faker.internet.userName(),
-          image_url: `https://i.pravatar.cc/150?u=${i}`
-        }
-      })
-      userPromises.push(userPromise)
-    }
-
-    const users: User[] = await Promise.all(userPromises)
-
-    const accountPromises: Promise<Account>[] = []
-
-    for (const user of users) {
-      const accountPromise = prisma.account.create({
-        data: {
-          email: faker.internet.email(),
-          password: faker.internet.password(),
-          userId: user.id
-        }
-      })
-      accountPromises.push(accountPromise)
-    }
-
-    await Promise.all(accountPromises)
-
     const musclePromise: Promise<Muscle>[] = []
-    const muscles = [
-      'Peitoral',
-      'Biceps',
-      'Triceps',
-      'Dorsal',
-      'Trapézio',
-      'Ombro',
-      'Perna',
-      'Glúteo',
-      'Abdômen',
-      'Trapézio'
+    const muscles = ['Peitoral', 'Dorsal', 'Perna']
+    const pics = [
+      'https://i.pinimg.com/originals/d8/1b/47/d81b4799318a6b03520967910cbbc66d.gif',
+      'https://gymvisual.com/img/p/5/6/8/3/5683.gif',
+      'https://media.tenor.com/Pfj8vy41k-0AAAAM/gym.gif'
     ]
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < muscles.length; i++) {
       const muscle = prisma.muscle.create({
         data: {
           name: muscles[i],
-          picture_url: `https://i.pravatar.cc/150?u=${i}`
+          picture_url: pics[i]
         }
       })
       musclePromise.push(muscle)
@@ -61,67 +26,22 @@ async function seed() {
     const musclesSaved: Muscle[] = await Promise.all(musclePromise)
 
     const exercisePromises: Promise<Exercise>[] = []
-    const exercise = [
-      'Supino',
-      'Rosca direta',
-      'Tríceps pulley',
-      'Puxada frontal',
-      'Desenvolvimento',
-      'Agachamento',
-      'Leg press',
-      'Stiff',
-      'Abdominal',
-      'Elevação de ombros'
-    ]
+    const exercise = ['Supino', 'Barra', 'Agachamento']
 
     for (const muscle of musclesSaved) {
       const exercisePromise = prisma.exercise.create({
         data: {
           name: exercise[Math.floor(Math.random() * exercise.length)],
           description: faker.lorem.sentence(),
-          gif_url: `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 10)}`,
+          gif_url: muscle.picture_url,
           muscleId: muscle.id
         }
       })
+
       exercisePromises.push(exercisePromise)
     }
 
-    const exercisesSaved: Exercise[] = await Promise.all(exercisePromises)
-
-    const workoutsPromise: Promise<Workout>[] = []
-
-    for (let i = 0; i < users.length; i++) {
-      workoutsPromise.push(
-        prisma.workout.create({
-          data: {
-            name: `Treino do dia ${i + 1}`,
-            day: i,
-            public: true,
-            picture_url: `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 10)}`,
-            userId: users[i].id
-          }
-        })
-      )
-    }
-    const workouts = await Promise.all(workoutsPromise)
-    const workoutItemPromises: Promise<WorkoutItem>[] = []
-
-    for (const workout of workouts) {
-      for (let i = 0; i < 5; i++) {
-        const workoutItemPromise = prisma.workoutItem.create({
-          data: {
-            set_number: i + 1,
-            reps: Math.floor(Math.random() * 10) + 1,
-            weight: Math.floor(Math.random() * 100) + 1,
-            workoutId: workout.id,
-            exerciseId: exercisesSaved[Math.floor(Math.random() * exercisesSaved.length)].id
-          }
-        })
-        workoutItemPromises.push(workoutItemPromise)
-      }
-    }
-
-    await Promise.all(workoutItemPromises)
+    await Promise.all(exercisePromises)
 
     prisma.$disconnect()
   } catch (error) {
