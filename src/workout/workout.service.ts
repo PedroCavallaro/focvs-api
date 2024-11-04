@@ -1,19 +1,39 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { WorkoutRepository } from './workout.repository'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
-import { PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
+import { CopyWorkoutDto, PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
 import { PaginationQueryDTO, parsePagination } from 'src/utils/pagination'
 import { WorkoutItemResponse, WorkoutResponseDTO } from './dto/workout-response.dto'
-import { AppError } from '@pedrocavallaro/focvs-utils'
+import { AppError, ForbiddenError } from '@pedrocavallaro/focvs-utils'
+import { HashService } from 'src/shared/services/hash/hash.service'
 
 @Injectable()
 export class WorkoutService {
-  constructor(private readonly repo: WorkoutRepository) {}
+  constructor(
+    private readonly repo: WorkoutRepository,
+    private readonly hashService: HashService
+  ) {}
 
   async createWorkout(userId: string, workoutDto: CreateWorkoutDto) {
-    const workout = await this.repo.saveWorkout(userId, workoutDto)
+    const signature = await this.hashService.generateHash(`${workoutDto.name}${userId}`)
+
+    const workout = await this.repo.saveWorkout(userId, { ...workoutDto, signature })
 
     return workout
+  }
+
+  async copyWorkoutToAccount(userId: string, copyWorokoutDto: CopyWorkoutDto) {
+    const userWorkouts = await this.repo.count({ signature: copyWorokoutDto.signature, userId })
+
+    // if (userWorkouts >= 1) {
+    //   throw new ForbiddenError('Esse treino já está copiado na sua conta')
+    // }
+
+    const workout = await this.repo.get({ signature: copyWorokoutDto.signature })
+
+    const res = await this.repo.saveCopied(userId, workout)
+
+    return res
   }
 
   async getUserWorkouts(userId: string) {
@@ -34,6 +54,12 @@ export class WorkoutService {
 
   async getWorkoutOfTheDay(userId: string) {
     const workout = await this.repo.get({ userId, day: new Date().getDay() })
+
+    return this.parseWorkoutReponse(workout)
+  }
+
+  async getWorkoutDetailsByShareLink(link: string) {
+    const workout = await this.repo.get({ signature: link })
 
     return this.parseWorkoutReponse(workout)
   }

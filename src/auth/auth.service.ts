@@ -13,13 +13,13 @@ import {
 import { RecoverPasswordStatus } from './enums/recover-password.status'
 import { CachedCodeObject } from './types/cached-code-object.type'
 import { ClientProxy } from '@nestjs/microservices'
-import { PasswordService } from './password/password.service'
+import { HashService } from '../shared/services/hash/hash.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly cache: CacheService,
-    private readonly passwordService: PasswordService,
+    private readonly hashService: HashService,
     private readonly jwtService: JwtService,
     private readonly repo: AuthRepository,
     @Inject('MESSAGING') private readonly messaging: ClientProxy
@@ -29,7 +29,7 @@ export class AuthService {
     const isAlreadyRegistered = await this.repo.searchAccount(createAccountDTO.email)
     if (isAlreadyRegistered) throw new AppError('Email já ccadastrado', HttpStatus.CONFLICT)
 
-    const hashedPass = await this.passwordService.generateHash(createAccountDTO.password)
+    const hashedPass = await this.hashService.generateHash(createAccountDTO.password)
 
     createAccountDTO.password = hashedPass
 
@@ -48,12 +48,10 @@ export class AuthService {
   async signIn(signInDTO: SiginDto) {
     const account = await this.repo.searchAccount(signInDTO.email)
 
+    console.log(account)
     if (!account) throw new AppError('Conta não registrada', HttpStatus.NOT_FOUND)
 
-    const isPasswordMatch = await this.passwordService.comparePassword(
-      signInDTO.password,
-      account.password
-    )
+    const isPasswordMatch = await this.hashService.compare(signInDTO.password, account.password)
 
     if (!isPasswordMatch) throw new AppError('Senha incorreta', HttpStatus.NOT_FOUND)
 
@@ -63,6 +61,8 @@ export class AuthService {
       account.name,
       account.imageUrl
     )
+    console.log(token)
+
     return token
   }
 
@@ -103,7 +103,7 @@ export class AuthService {
     if (cachedCodeObject.status !== RecoverPasswordStatus.VALID)
       throw new AppError('Token inválido', HttpStatus.UNAUTHORIZED)
 
-    const hashedPass = await this.passwordService.generateHash(newPasswordDto.password)
+    const hashedPass = await this.hashService.generateHash(newPasswordDto.password)
     await this.repo.updatePassword(user.id, hashedPass)
     await this.cache.del(jwt)
 

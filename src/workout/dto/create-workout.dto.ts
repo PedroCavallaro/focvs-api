@@ -13,6 +13,8 @@ export class CreateWorkoutDto {
 
   @IsNotEmpty()
   exercises: Array<WorkoutItem>
+
+  signature: string
 }
 
 export class ExerciseSet {

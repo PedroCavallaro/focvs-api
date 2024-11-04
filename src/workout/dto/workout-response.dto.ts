@@ -7,6 +7,7 @@ export interface WorkoutResponseDTO {
   day: number
   exerciseAmount: number
   user: {
+    id: string
     name: string
     image_url: string
   }

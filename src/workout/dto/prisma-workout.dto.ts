@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 class WorkoutInclude implements Prisma.WorkoutInclude {
   user: {
     select: {
+      id: true
       name: true
       image_url: true
     }

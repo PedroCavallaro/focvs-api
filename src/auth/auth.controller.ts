@@ -18,8 +18,10 @@ export class AuthController {
   @Public()
   @Post('login')
   async signIn(@Body() signInDto: SiginDto, @Res() res: Response) {
+    console.log(signInDto)
     const userToken = await this.service.signIn(signInDto)
 
+    console.log(userToken)
     return res.status(200).send({ token: userToken })
   }
 

@@ -2,15 +2,26 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { WorkoutService } from './workout.service'
 import { AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { PaginationQueryDTO } from 'src/utils/pagination'
-import { CreateWorkoutDto, UpdateWorkouDto } from './dto'
+import { CopyWorkoutDto, CreateWorkoutDto, UpdateWorkouDto } from './dto'
 
 @Controller('workout')
 export class WorkoutController {
   constructor(private readonly service: WorkoutService) {}
 
   @Post('')
-  async createWorkout(@AuthUser() user: JwtPayloadDTO, @Body() workoutDto: CreateWorkoutDto) {
-    const workout = await this.service.createWorkout(user.id, workoutDto)
+  async createWorkout(@AuthUser() user: JwtPayloadDTO, @Body() createWorkoutDto: CreateWorkoutDto) {
+    const workout = await this.service.createWorkout(user.id, createWorkoutDto)
+
+    return workout
+  }
+
+  @Post('link/:link')
+  async copyWorkoutToAccount(
+    @AuthUser() user: JwtPayloadDTO,
+    @Body() copyWorkoutDto: CopyWorkoutDto
+  ) {
+    const workout = await this.service.copyWorkoutToAccount(user.id, copyWorkoutDto)
+
     return workout
   }
 
@@ -19,6 +30,13 @@ export class WorkoutController {
     const workouts = await this.service.getUserWorkouts(user.id)
 
     return workouts
+  }
+
+  @Get('link/:link')
+  async getWorkoutDetailsByShareLink(@AuthUser() user: JwtPayloadDTO, @Param('link') link: string) {
+    const workout = await this.service.getWorkoutDetailsByShareLink(link)
+
+    return { ...workout, isFromSameUser: user.id === workout.user.id }
   }
 
   @Get('today')
@@ -33,10 +51,10 @@ export class WorkoutController {
     return await this.service.searchPaginated(query)
   }
 
-  @Get(':workoutId')
+  @Get('/:workoutId')
   async getWorkout(@AuthUser() user: JwtPayloadDTO, @Param('workoutId') workoutId: string) {
     const workout = await this.service.getFullWorkoutById(workoutId, user.id)
-   
+
     return workout
   }
 

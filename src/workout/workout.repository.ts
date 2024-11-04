@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/shared/db/prisma.service'
 import { Prisma, Workout, WorkoutItem } from '@prisma/client'
 import { buildPaginationParams, PaginationQueryDTO } from 'src/utils/pagination'
-import { UpdateWorkouDto, CreateWorkoutDto } from './dto'
+import { UpdateWorkouDto, CreateWorkoutDto, PrismaWorkoutDTO } from './dto'
 
 @Injectable()
 export class WorkoutRepository {
   private readonly workoutInclude = {
     user: {
       select: {
+        id: true,
         name: true,
         image_url: true
       }
@@ -78,7 +79,7 @@ export class WorkoutRepository {
     }
   }
 
-  async get(where?: Prisma.WorkoutWhereInput) {
+  async get(where?: Prisma.WorkoutWhereInput): Promise<PrismaWorkoutDTO> {
     try {
       const workout = await this.prisma.workout.findFirst({
         where,
@@ -86,7 +87,33 @@ export class WorkoutRepository {
           ...this.workoutInclude
         }
       })
-      console.log(workout)
+
+      return workout
+    } catch (error) {
+      PrismaService.handleError(error)
+    }
+  }
+
+  async count(where?: Prisma.WorkoutWhereInput) {
+    try {
+      const count = await this.prisma.workout.count({
+        where
+      })
+
+      return count
+    } catch (error) {
+      PrismaService.handleError(error)
+    }
+  }
+
+  async getMany(where?: Prisma.WorkoutWhereInput): Promise<PrismaWorkoutDTO[]> {
+    try {
+      const workout = await this.prisma.workout.findMany({
+        where,
+        include: {
+          ...this.workoutInclude
+        }
+      })
 
       return workout
     } catch (error) {
@@ -147,6 +174,45 @@ export class WorkoutRepository {
     }
   }
 
+  async saveCopied(userId: string, workout: PrismaWorkoutDTO) {
+    try {
+      return await this.prisma.$transaction(async () => {
+        const savedWorkout = await this.prisma.workout.create({
+          data: {
+            name: workout.name,
+            day: workout.day,
+            signature: workout.signature,
+            public: workout.public,
+            userId: userId,
+            picture_url: workout.picture_url,
+            copied: true
+          }
+        })
+
+        console.log(workout.workoutItem)
+
+        const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
+        for (const workoutItem of workout.workoutItem) {
+          workoutItemsToCreate.push({
+            reps: 1,
+            set_number: workoutItem.set_number,
+            weight: 1,
+            exerciseId: workoutItem.exerciseId,
+            workoutId: savedWorkout.id
+          })
+        }
+
+        await this.prisma.workoutItem.createMany({
+          data: workoutItemsToCreate
+        })
+
+        return savedWorkout
+      })
+    } catch (error) {
+      PrismaService.handleError(error)
+    }
+  }
+
   async saveWorkout(userId: string, workoutDto: CreateWorkoutDto): Promise<Workout> {
     try {
       return await this.prisma.$transaction(async () => {
@@ -154,6 +220,7 @@ export class WorkoutRepository {
           data: {
             name: workoutDto.name,
             day: workoutDto.day,
+            signature: workoutDto.signature,
             public: workoutDto.public,
             userId: userId
           }
