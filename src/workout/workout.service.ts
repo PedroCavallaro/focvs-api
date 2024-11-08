@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common'
+import { HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { WorkoutRepository } from './workout.repository'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { CopyWorkoutDto, PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
@@ -6,10 +6,12 @@ import { PaginationQueryDTO, parsePagination } from 'src/utils/pagination'
 import { WorkoutItemResponse, WorkoutResponseDTO } from './dto/workout-response.dto'
 import { AppError, ForbiddenError } from '@pedrocavallaro/focvs-utils'
 import { HashService } from 'src/shared/services/hash/hash.service'
+import { ClientProxy } from '@nestjs/microservices'
 
 @Injectable()
 export class WorkoutService {
   constructor(
+    @Inject('IMAGES_SERVICE') private readonly imageService: ClientProxy,
     private readonly repo: WorkoutRepository,
     private readonly hashService: HashService
   ) {}
@@ -17,7 +19,12 @@ export class WorkoutService {
   async createWorkout(userId: string, workoutDto: CreateWorkoutDto) {
     const signature = await this.hashService.generateHash(`${workoutDto.name}${userId}`)
 
-    const workout = await this.repo.saveWorkout(userId, { ...workoutDto, signature })
+    const { workout, muscles } = await this.repo.saveWorkout(userId, { ...workoutDto, signature })
+
+    this.imageService.emit('workout_created', {
+      workoutId: workout.id,
+      muscles: muscles.map((e) => e.name)
+    })
 
     return workout
   }
@@ -25,9 +32,9 @@ export class WorkoutService {
   async copyWorkoutToAccount(userId: string, copyWorokoutDto: CopyWorkoutDto) {
     const userWorkouts = await this.repo.count({ signature: copyWorokoutDto.signature, userId })
 
-    // if (userWorkouts >= 1) {
-    //   throw new ForbiddenError('Esse treino já está copiado na sua conta')
-    // }
+    if (userWorkouts >= 1) {
+      throw new ForbiddenError('Esse treino já está copiado na sua conta')
+    }
 
     const workout = await this.repo.get({ signature: copyWorokoutDto.signature })
 

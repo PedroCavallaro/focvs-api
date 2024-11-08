@@ -8,11 +8,13 @@ import { RecoverPasswordGuard } from './auth/guards/recover-password.guard'
 import { APP_GUARD, Reflector } from '@nestjs/core'
 import { FocvsSharedStuffModule, JwtService, AuthGuard } from '@pedrocavallaro/focvs-utils'
 import { HashModule } from './shared/services/hash'
+import { HttpModule } from '@nestjs/axios'
 
 @Module({
   imports: [
     FocvsSharedStuffModule,
     ConfigModule.forRoot(),
+    HttpModule,
     HashModule,
     PrismaModule,
     AuthModule,

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres
@@ -16,5 +14,26 @@ services:
       - 6379:6379
     volumes:
       - cache:/cache
+  minio:
+    image: quay.io/minio/minio
+    entrypoint: sh
+    command: -c 'mc mb /export/workout && mc mb /export/gifs && /usr/bin/minio server /export' && mc policy public minio/bucketname && server --console-address ":9001" 
+    hostname: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    expose:
+      - 9000:9000
+      - 9001:9001
+    network_mode: "host"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DEFAULT_BUCKETS: gifs
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 volumes:
   cache:

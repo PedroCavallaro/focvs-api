@@ -43,13 +43,11 @@ export class ExerciseService {
 
     // if(cachedExercises) {
     //   const parsedExercises = JSON.parse(cachedExercises)
-      
+
     //   return parsePagination(parsedExercises.data, query, parsedExercises.total)
     // }
 
     const [exercises, count] = await this.repo.getExercises(muscleId, query)
-
-    console.log(exercises);
 
     // await this.cache.set(`exercises:${query.page ?? 0}`, JSON.stringify({
     //   total: count,
@@ -61,13 +59,13 @@ export class ExerciseService {
 
   async getMuscles(q: string) {
     const res = await this.repo.getMuscles(q)
- 
+
     const muscles = res.map((m) => ({
       ...m,
       exerciseCount: m._count.exercise,
       _count: undefined
     }))
 
-    return  muscles
+    return muscles
   }
 }

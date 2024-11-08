@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/shared/db/prisma.service'
-import { Prisma, Workout, WorkoutItem } from '@prisma/client'
+import { Muscle, Prisma, Workout, WorkoutItem } from '@prisma/client'
 import { buildPaginationParams, PaginationQueryDTO } from 'src/utils/pagination'
 import { UpdateWorkouDto, CreateWorkoutDto, PrismaWorkoutDTO } from './dto'
+import { randomUUID } from 'node:crypto'
 
 @Injectable()
 export class WorkoutRepository {
@@ -189,9 +190,8 @@ export class WorkoutRepository {
           }
         })
 
-        console.log(workout.workoutItem)
-
         const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
+
         for (const workoutItem of workout.workoutItem) {
           workoutItemsToCreate.push({
             reps: 1,
@@ -213,20 +213,30 @@ export class WorkoutRepository {
     }
   }
 
-  async saveWorkout(userId: string, workoutDto: CreateWorkoutDto): Promise<Workout> {
+  async saveWorkout(
+    userId: string,
+    workoutDto: CreateWorkoutDto
+  ): Promise<{ workout: Workout; muscles: Muscle[] }> {
     try {
+      const id = randomUUID()
+      const picture_url = `${process.env.MINIO_URL}/workout/${id}.png`
+
       return await this.prisma.$transaction(async () => {
         const workout = await this.prisma.workout.create({
           data: {
+            id,
             name: workoutDto.name,
             day: workoutDto.day,
             signature: workoutDto.signature,
             public: workoutDto.public,
-            userId: userId
+            userId: userId,
+            picture_url
           }
         })
 
         const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
+
+        const exerciseIds = []
 
         for (const { sets, exerciseId } of workoutDto.exercises) {
           for (const { ...s } of sets) {
@@ -236,13 +246,27 @@ export class WorkoutRepository {
               workoutId: workout.id
             })
           }
+
+          exerciseIds.push(exerciseId)
         }
 
         await this.prisma.workoutItem.createMany({
           data: workoutItemsToCreate
         })
 
-        return workout
+        const muscles = await this.prisma.muscle.findMany({
+          where: {
+            exercise: {
+              some: {
+                id: {
+                  in: exerciseIds
+                }
+              }
+            }
+          }
+        })
+
+        return { workout, muscles }
       })
     } catch (error) {
       PrismaService.handleError(error)

@@ -48,7 +48,6 @@ export class AuthService {
   async signIn(signInDTO: SiginDto) {
     const account = await this.repo.searchAccount(signInDTO.email)
 
-    console.log(account)
     if (!account) throw new AppError('Conta não registrada', HttpStatus.NOT_FOUND)
 
     const isPasswordMatch = await this.hashService.compare(signInDTO.password, account.password)
@@ -61,7 +60,6 @@ export class AuthService {
       account.name,
       account.imageUrl
     )
-    console.log(token)
 
     return token
   }

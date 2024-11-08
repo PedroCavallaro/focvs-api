@@ -18,17 +18,14 @@ export class AuthController {
   @Public()
   @Post('login')
   async signIn(@Body() signInDto: SiginDto, @Res() res: Response) {
-    console.log(signInDto)
     const userToken = await this.service.signIn(signInDto)
 
-    console.log(userToken)
     return res.status(200).send({ token: userToken })
   }
 
   @Public()
   @Post('register')
   async createUser(@Body() createAccountDto: CreateAccountDto, @Res() res: Response) {
-    console.log('a')
     const userToken = await this.service.createUser(createAccountDto)
 
     return res.status(201).send({ token: userToken })
