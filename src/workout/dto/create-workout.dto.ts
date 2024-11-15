@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator'
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateWorkoutDto {
   @IsNotEmpty()
@@ -12,12 +12,16 @@ export class CreateWorkoutDto {
   day: number
 
   @IsNotEmpty()
-  exercises: Array<WorkoutItem>
+  exercises: Array<WorkoutExercises>
 
-  signature: string
+  signature?: string
 }
 
 export class ExerciseSet {
+  @IsOptional()
+  @IsString()
+  id?: string
+
   @IsNotEmpty()
   @IsNumber()
   set_number: number
@@ -31,10 +35,10 @@ export class ExerciseSet {
   weight: number
 }
 
-export class WorkoutItem {
+export class WorkoutExercises {
   @IsNotEmpty()
   @IsNumber()
-  exerciseId: string
+  id: string
 
   @IsNotEmpty()
   sets: ExerciseSet[]

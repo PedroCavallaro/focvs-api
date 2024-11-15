@@ -1,5 +1,5 @@
-import { WorkoutItem } from '@prisma/client'
-import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator'
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional } from 'class-validator'
+import { WorkoutExercises } from './create-workout.dto'
 
 export class UpdateWorkouDto {
   @IsNotEmpty()
@@ -21,5 +21,10 @@ export class UpdateWorkouDto {
   day?: number
 
   @IsOptional()
-  exercises?: Array<WorkoutItem>
+  @IsArray()
+  deletedSets?: Array<string>
+
+  @IsOptional()
+  @IsArray()
+  exercises?: Array<WorkoutExercises>
 }

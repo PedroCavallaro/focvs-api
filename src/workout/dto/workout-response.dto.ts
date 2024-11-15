@@ -15,7 +15,7 @@ export interface WorkoutResponseDTO {
 }
 
 export interface WorkoutItemResponse {
-  exerciseId: string
+  id: string
   name: string
   gif_url: string
   sets: ExerciseSet[]

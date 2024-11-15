@@ -17,6 +17,7 @@ export class WorkoutRepository {
     },
     workoutItem: {
       select: {
+        id: true,
         exerciseId: true,
         exercise: {
           select: {
@@ -80,6 +81,20 @@ export class WorkoutRepository {
     }
   }
 
+  async deleteManySets(sets: string[]) {
+    try {
+      return await this.prisma.workoutItem.deleteMany({
+        where: {
+          id: {
+            in: sets
+          }
+        }
+      })
+    } catch (error) {
+      PrismaService.handleError(error)
+    }
+  }
+
   async get(where?: Prisma.WorkoutWhereInput): Promise<PrismaWorkoutDTO> {
     try {
       const workout = await this.prisma.workout.findFirst({
@@ -135,25 +150,45 @@ export class WorkoutRepository {
           picture_url: updateWorkoutDto.picture_url
         }
       })
+
       return update
     } catch (error) {
       PrismaService.handleError(error)
     }
   }
-  async updateWorkoutSets(updateWorkouDto: UpdateWorkouDto) {
+  async upsertWorkoutSets(updateWorkouDto: UpdateWorkouDto) {
     try {
-      for (const set of updateWorkouDto.exercises) {
-        await this.prisma.workoutItem.update({
-          where: {
-            id: set.id
-          },
-          data: {
-            exerciseId: set.exerciseId,
-            reps: set.reps,
-            weight: set.weight,
-            workoutId: set.workoutId
-          }
-        })
+      if (!updateWorkouDto?.exercises) {
+        return
+      }
+
+      const setsToUpdate = []
+
+      for (const exercise of updateWorkouDto.exercises) {
+        for (const set of exercise.sets) {
+          setsToUpdate.push(
+            this.prisma.workoutItem.upsert({
+              where: {
+                id: set?.id ?? randomUUID()
+              },
+              update: {
+                workoutId: updateWorkouDto.id,
+                exerciseId: exercise.id,
+                reps: set.reps,
+                weight: set.weight
+              },
+              create: {
+                workoutId: updateWorkouDto.id,
+                exerciseId: exercise.id,
+                reps: set.reps,
+                set_number: set.set_number,
+                weight: set.weight
+              }
+            })
+          )
+        }
+
+        await Promise.all(setsToUpdate)
       }
     } catch (error) {
       PrismaService.handleError(error)
@@ -213,6 +248,33 @@ export class WorkoutRepository {
     }
   }
 
+  async createWorkoutItems(
+    workoutDto: CreateWorkoutDto | UpdateWorkouDto,
+    { id: workoutId }: Partial<Workout>
+  ) {
+    const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
+
+    const exerciseIds = []
+
+    for (const { sets, id } of workoutDto.exercises) {
+      for (const { ...s } of sets) {
+        workoutItemsToCreate.push({
+          ...s,
+          exerciseId: id,
+          workoutId: workoutId
+        })
+      }
+
+      exerciseIds.push(id)
+    }
+
+    await this.prisma.workoutItem.createMany({
+      data: workoutItemsToCreate
+    })
+
+    return exerciseIds
+  }
+
   async saveWorkout(
     userId: string,
     workoutDto: CreateWorkoutDto
@@ -234,25 +296,7 @@ export class WorkoutRepository {
           }
         })
 
-        const workoutItemsToCreate: Omit<WorkoutItem, 'id'>[] = []
-
-        const exerciseIds = []
-
-        for (const { sets, exerciseId } of workoutDto.exercises) {
-          for (const { ...s } of sets) {
-            workoutItemsToCreate.push({
-              ...s,
-              exerciseId,
-              workoutId: workout.id
-            })
-          }
-
-          exerciseIds.push(exerciseId)
-        }
-
-        await this.prisma.workoutItem.createMany({
-          data: workoutItemsToCreate
-        })
+        const exerciseIds = await this.createWorkoutItems(workoutDto, workout)
 
         const muscles = await this.prisma.muscle.findMany({
           where: {

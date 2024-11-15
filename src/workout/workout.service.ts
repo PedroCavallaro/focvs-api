@@ -84,7 +84,12 @@ export class WorkoutService {
       throw new AppError('Unauthorized', HttpStatus.FORBIDDEN)
     }
 
-    const updatedWorkout = await this.repo.updateWorkout(updateWorkoutDto)
+    const updatedWorkout = await Promise.all([
+      this.repo.updateWorkout(updateWorkoutDto),
+      this.repo.upsertWorkoutSets(updateWorkoutDto)
+    ])
+
+    await this.repo.deleteManySets(updateWorkoutDto.deletedSets)
 
     return updatedWorkout
   }
@@ -149,6 +154,7 @@ export class WorkoutService {
 
       relatedItems.map((set) =>
         sets.push({
+          id: set.id,
           set_number: set.set_number,
           reps: set.reps,
           weight: set.weight
@@ -156,7 +162,7 @@ export class WorkoutService {
       )
 
       exercises.push({
-        exerciseId: item.exercise.id,
+        id: item.exercise.id,
         gif_url: item.exercise.gif_url,
         name: item.exercise.name,
         sets: [...exercise.sets, ...sets]
