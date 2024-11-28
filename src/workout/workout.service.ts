@@ -3,7 +3,7 @@ import { WorkoutRepository } from './workout.repository'
 import { CreateWorkoutDto } from './dto/create-workout.dto'
 import { CopyWorkoutDto, PrismaWorkoutDTO, UpdateWorkouDto } from './dto'
 import { PaginationQueryDTO, parsePagination } from 'src/utils/pagination'
-import { WorkoutItemResponse, WorkoutResponseDTO } from './dto/workout-response.dto'
+import { WorkoutResponseDTO } from './dto/workout-response.dto'
 import { AppError, ForbiddenError } from '@pedrocavallaro/focvs-utils'
 import { HashService } from 'src/shared/services/hash/hash.service'
 import { ClientProxy } from '@nestjs/microservices'
@@ -144,10 +144,6 @@ export class WorkoutService {
 
       exerciseAmount++
 
-      const exercise = {
-        sets: []
-      } as WorkoutItemResponse
-
       const relatedItems = workout.workoutItem.filter((i) => i.exercise.id === item.exercise.id)
 
       const sets = []
@@ -156,6 +152,7 @@ export class WorkoutService {
         sets.push({
           id: set.id,
           set_number: set.set_number,
+          done: false,
           reps: set.reps,
           weight: set.weight
         })
@@ -165,7 +162,7 @@ export class WorkoutService {
         id: item.exercise.id,
         gif_url: item.exercise.gif_url,
         name: item.exercise.name,
-        sets: [...exercise.sets, ...sets]
+        sets
       })
 
       buildedExercises[item.exercise.id] = 1

@@ -175,7 +175,8 @@ export class WorkoutRepository {
                 workoutId: updateWorkouDto.id,
                 exerciseId: exercise.id,
                 reps: set.reps,
-                weight: set.weight
+                weight: set.weight,
+                set_number: set.set_number
               },
               create: {
                 workoutId: updateWorkouDto.id,

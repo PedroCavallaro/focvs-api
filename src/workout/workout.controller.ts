@@ -43,6 +43,7 @@ export class WorkoutController {
   async getWorkoutOfTheDay(@AuthUser() user: JwtPayloadDTO) {
     const workout = await this.service.getWorkoutOfTheDay(user.id)
 
+    console.log(workout)
     return workout
   }
 
