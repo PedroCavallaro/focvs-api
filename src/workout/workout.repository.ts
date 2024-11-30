@@ -38,11 +38,15 @@ export class WorkoutRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async searchPaginated(q: PaginationQueryDTO) {
+  async searchPaginated(q: PaginationQueryDTO, userId: string) {
     try {
       const cond = {
-        NOT: {
-          public: false
+        userId: {
+          not: userId
+        },
+
+        public: {
+          equals: true
         },
         OR: [
           {
@@ -162,7 +166,6 @@ export class WorkoutRepository {
         return
       }
 
-      console.log('oi')
       const setsToUpdate = []
 
       for (const exercise of updateWorkouDto.exercises) {

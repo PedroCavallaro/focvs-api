@@ -58,8 +58,12 @@ export class WorkoutController {
   }
 
   @Get('search')
-  async searchPaginated(@Query() query: PaginationQueryDTO) {
-    return await this.service.searchPaginated(query)
+  async searchPaginated(@AuthUser() user: JwtPayloadDTO, @Query() query: PaginationQueryDTO) {
+    const res = await this.service.searchPaginated(query, user.id)
+
+    console.log(res)
+
+    return res
   }
 
   @Get('/:workoutId')

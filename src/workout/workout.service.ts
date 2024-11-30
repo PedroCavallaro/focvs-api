@@ -67,8 +67,8 @@ export class WorkoutService {
     return res
   }
 
-  async searchPaginated(q: PaginationQueryDTO) {
-    const [workouts, count] = await this.repo.searchPaginated(q)
+  async searchPaginated(q: PaginationQueryDTO, userId: string) {
+    const [workouts, count] = await this.repo.searchPaginated(q, userId)
 
     const res = workouts.map((workout) => this.parseWorkoutReponse(workout))
 
