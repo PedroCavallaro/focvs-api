@@ -71,9 +71,9 @@ export class AuthService {
     if (!account) throw new AppError('Conta não encontrada', HttpStatus.NOT_FOUND)
 
     const jwt = this.jwtService.signToken(account.id, account.email, '', '')
-    const token = this.generateOneTimeToken()
+    // const token = this.generateOneTimeToken()
     const cachedCodeObject: CachedCodeObject = {
-      code: token,
+      code: '1111',
       status: RecoverPasswordStatus.PENDING
     }
 

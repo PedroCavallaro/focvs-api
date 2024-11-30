@@ -162,6 +162,7 @@ export class WorkoutRepository {
         return
       }
 
+      console.log('oi')
       const setsToUpdate = []
 
       for (const exercise of updateWorkouDto.exercises) {

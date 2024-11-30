@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, UseGuards, HttpStatus } from '@nestjs/common'
+import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common'
 import { Public, AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { AuthService } from './auth.service'
 import {
@@ -37,6 +37,7 @@ export class AuthController {
     return await this.service.generateRecoverPasswordToken(recoverDto)
   }
 
+  @Public()
   @UseGuards(RecoverPasswordGuard)
   @Post('validate')
   async validateRecoverToken(

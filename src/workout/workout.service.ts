@@ -7,6 +7,7 @@ import { WorkoutResponseDTO } from './dto/workout-response.dto'
 import { AppError, ForbiddenError } from '@pedrocavallaro/focvs-utils'
 import { HashService } from 'src/shared/services/hash/hash.service'
 import { ClientProxy } from '@nestjs/microservices'
+import { randomUUID } from 'node:crypto'
 
 @Injectable()
 export class WorkoutService {
@@ -17,7 +18,7 @@ export class WorkoutService {
   ) {}
 
   async createWorkout(userId: string, workoutDto: CreateWorkoutDto) {
-    const signature = await this.hashService.generateHash(`${workoutDto.name}${userId}`)
+    const signature = randomUUID()
 
     const { workout, muscles } = await this.repo.saveWorkout(userId, { ...workoutDto, signature })
 
@@ -89,7 +90,9 @@ export class WorkoutService {
       this.repo.upsertWorkoutSets(updateWorkoutDto)
     ])
 
-    await this.repo.deleteManySets(updateWorkoutDto.deletedSets)
+    if (updateWorkoutDto.deletedSets) {
+      await this.repo.deleteManySets(updateWorkoutDto.deletedSets)
+    }
 
     return updatedWorkout
   }
