@@ -3,6 +3,7 @@ import { WorkoutService } from './workout.service'
 import { AuthUser, JwtPayloadDTO } from '@pedrocavallaro/focvs-utils'
 import { PaginationQueryDTO } from 'src/utils/pagination'
 import { CopyWorkoutDto, CreateWorkoutDto, UpdateWorkouDto } from './dto'
+import { CopyWorkoutByIdDto } from './dto/copy-workout-by-id.dto'
 
 @Controller('workout')
 export class WorkoutController {
@@ -21,6 +22,16 @@ export class WorkoutController {
     @Body() copyWorkoutDto: CopyWorkoutDto
   ) {
     const workout = await this.service.copyWorkoutToAccount(user.id, copyWorkoutDto)
+
+    return workout
+  }
+
+  @Post('copy')
+  async copyWorkoutToAccountById(
+    @AuthUser() user: JwtPayloadDTO,
+    @Body() copyWorkoutDto: CopyWorkoutByIdDto
+  ) {
+    const workout = await this.service.copyWorkoutToAccountById(user.id, copyWorkoutDto)
 
     return workout
   }

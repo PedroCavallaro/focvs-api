@@ -8,6 +8,7 @@ import { AppError, ForbiddenError } from '@pedrocavallaro/focvs-utils'
 import { HashService } from 'src/shared/services/hash/hash.service'
 import { ClientProxy } from '@nestjs/microservices'
 import { randomUUID } from 'node:crypto'
+import { CopyWorkoutByIdDto } from './dto/copy-workout-by-id.dto'
 
 @Injectable()
 export class WorkoutService {
@@ -28,6 +29,20 @@ export class WorkoutService {
     })
 
     return workout
+  }
+
+  async copyWorkoutToAccountById(userId: string, copyWorkoutByIdDto: CopyWorkoutByIdDto) {
+    const userWorkouts = await this.repo.count({ id: copyWorkoutByIdDto.workoutId, userId })
+
+    if (userWorkouts >= 1) {
+      throw new ForbiddenError('Esse treino já está copiado na sua conta')
+    }
+
+    const workout = await this.repo.get({ id: copyWorkoutByIdDto.workoutId })
+
+    const res = await this.repo.saveCopied(userId, workout)
+
+    return res
   }
 
   async copyWorkoutToAccount(userId: string, copyWorokoutDto: CopyWorkoutDto) {
