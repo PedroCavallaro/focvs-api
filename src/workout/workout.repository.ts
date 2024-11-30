@@ -261,7 +261,9 @@ export class WorkoutRepository {
     for (const { sets, id } of workoutDto.exercises) {
       for (const { ...s } of sets) {
         workoutItemsToCreate.push({
-          ...s,
+          reps: s.reps,
+          set_number: s.set_number,
+          weight: s.weight,
           exerciseId: id,
           workoutId: workoutId
         })
